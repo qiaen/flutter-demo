@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const CupertinoApp(
       title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       theme: CupertinoThemeData(
-        brightness: Brightness.light,
+        brightness: Brightness.light, // 控制项目暗黑模式 / 日间模式
         primaryColor: CupertinoColors.activeBlue, // 全局活跃主色调（影响图标和文字）
       ),
       home: MainTabPage(),
@@ -75,9 +75,7 @@ class MainTabPage extends StatelessWidget {
       ),
       // 2. 页面构建器：index 由系统的 Scaffold 自动控制并传入
       tabBuilder: (context, index) {
-        return CupertinoTabView(
-          builder: (context) => _getPage(index),
-        );
+        return CupertinoTabView(builder: (context) => _getPage(index));
       },
     );
   }

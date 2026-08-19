@@ -11,6 +11,7 @@ class HomePage extends StatelessWidget {
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Home'),
+        // backgroundColor: CupertinoColors.systemBlue, // 背景色，滚动上去才会显示这个背景色
       ),
       child: SafeArea(
         child: ListView(
