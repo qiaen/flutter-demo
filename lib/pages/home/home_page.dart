@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
             SizedBox(height: 16),
             // 2. 左右排列的卡片
             HomeCards(),
-            SizedBox(height: 20),
+            SizedBox(height: 16),
             // 3. 列表
             HomeList(),
           ],
