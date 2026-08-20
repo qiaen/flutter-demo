@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../widgets/network_image_widget.dart';
 
 class UserDetailPage extends StatefulWidget {
   const UserDetailPage({super.key});
@@ -111,10 +112,12 @@ class _UserDetailPageState extends State<UserDetailPage> {
     debugPrint('topBarRatio:         $topBarRatio');
     debugPrint('perfectInitialSize:  $perfectInitialSize');
     debugPrint('父容器可用高度:       ${screenHeight - statusBarHeight}');
-    debugPrint('sheet实际像素高度:    ${(screenHeight - statusBarHeight) * perfectInitialSize}');
+    debugPrint(
+      'sheet实际像素高度:    ${(screenHeight - statusBarHeight) * perfectInitialSize}',
+    );
     // debugPrint('期望像素高度:         ${screenHeight - statusBarHeight - navigationBarHeight}');
     debugPrint('==============================================');
-    
+
     return Padding(
       padding: EdgeInsets.only(top: topPadding),
       child: DraggableScrollableSheet(
@@ -124,10 +127,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
         maxChildSize: perfectInitialSize,
         expand: false,
         snap: true, // 1. 开启“吸附/回弹”功能
-        snapSizes: [
-          0.0,
-          perfectInitialSize,
-        ], // 2. 定义吸附锚点（必须包含 min 和 max 的值）
+        snapSizes: [0.0, perfectInitialSize], // 2. 定义吸附锚点（必须包含 min 和 max 的值）
         builder: (ctx, scrollController) {
           return Container(
             decoration: const BoxDecoration(
@@ -140,7 +140,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   padding: EdgeInsets.only(
                     left: 16,
                     right: 16,
-                    top: 16,
+                    top: 8,
                     bottom: 8,
                   ),
                   child: Align(
@@ -178,21 +178,15 @@ class _UserDetailPageState extends State<UserDetailPage> {
                         child: Row(
                           children: [
                             ClipOval(
-                              child: Image.network(
-                                'https://picsum.photos/seed/avatar/200/200',
+                              child: NetworkImageWidget(
+                                src:
+                                    'https://picsum.photos/seed/avatar/200/200',
                                 width: 64,
                                 height: 64,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) => Container(
-                                  width: 64,
-                                  height: 64,
-                                  color: CupertinoColors.systemGrey5,
-                                  child: const Icon(
-                                    CupertinoIcons.person_fill,
-                                    size: 36,
-                                    color: CupertinoColors.systemGrey2,
-                                  ),
-                                ),
+                                errorIcon: CupertinoIcons.person_fill,
+                                errorIconColor: CupertinoColors.systemGrey2,
+                                errorIconSize: 36,
                               ),
                             ),
                             const SizedBox(width: 14),

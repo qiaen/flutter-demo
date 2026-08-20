@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../widgets/network_image_widget.dart';
 import 'home_detail_page.dart';
 
 class HomeList extends StatelessWidget {
@@ -102,21 +103,12 @@ class HomeList extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                item['image'] as String,
+              child: NetworkImageWidget(
+                src: item['image'] as String,
                 width: 70,
                 height: 70,
                 fit: BoxFit.cover,
                 cacheWidth: 210, // 70 * 3，按 3x DPR 缓存，避免滚动时反复解码原图导致掉帧
-                errorBuilder: (_, _, _) => Container(
-                  width: 70,
-                  height: 70,
-                  color: CupertinoColors.systemGrey5,
-                  child: const Icon(
-                    CupertinoIcons.photo,
-                    color: CupertinoColors.systemGrey3,
-                  ),
-                ),
               ),
             ),
             const SizedBox(width: 12),

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../widgets/network_image_widget.dart';
 import 'user_detail_page.dart';
 
 class MinePage extends StatelessWidget {
@@ -137,19 +138,14 @@ class _UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.network(
-      'https://picsum.photos/seed/avatar/200/200',
+    return NetworkImageWidget(
+      src: 'https://picsum.photos/seed/avatar/200/200',
       width: 80,
       height: 80,
       fit: BoxFit.cover,
-      errorBuilder: (_, _, _) => Container(
-        color: CupertinoColors.systemGrey5,
-        child: const Icon(
-          CupertinoIcons.person_fill,
-          size: 44,
-          color: CupertinoColors.systemGrey2,
-        ),
-      ),
+      errorIcon: CupertinoIcons.person_fill,
+      errorIconColor: CupertinoColors.systemGrey2,
+      errorIconSize: 44,
     );
   }
 }

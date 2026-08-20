@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../widgets/network_image_widget.dart';
 // class HomeDetailPage extends StatelessWidget { 无状态，内部不能用setState修改值
 // 下面改成有状态组件
 
@@ -124,23 +125,12 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 头图
-              Image.network(
-                widget.item['image'] as String,
+              NetworkImageWidget(
+                src: widget.item['image'] as String,
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
                 cacheWidth: (MediaQuery.of(context).size.width * 3).round(), // 按 3x DPR 缓存
-                errorBuilder: (_, _, _) => Container(
-                  height: 250,
-                  color: CupertinoColors.systemGrey5,
-                  child: const Center(
-                    child: Icon(
-                      CupertinoIcons.photo,
-                      size: 48,
-                      color: CupertinoColors.systemGrey3,
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(height: 20),
               // 标题 & 标签
@@ -390,23 +380,12 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              section['image']!,
+            child: NetworkImageWidget(
+              src: section['image']!,
               width: double.infinity,
               height: 200,
               fit: BoxFit.cover,
               cacheWidth: (MediaQuery.of(context).size.width * 3).round(), // 按 3x DPR 缓存
-              errorBuilder: (_, _, _) => Container(
-                height: 200,
-                color: CupertinoColors.systemGrey5,
-                child: const Center(
-                  child: Icon(
-                    CupertinoIcons.photo,
-                    size: 40,
-                    color: CupertinoColors.systemGrey3,
-                  ),
-                ),
-              ),
             ),
           ),
         ),
@@ -498,14 +477,12 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
-            child: Image.network(
-              image,
+            child: NetworkImageWidget(
+              src: image,
               width: 150,
               height: 100,
               fit: BoxFit.cover,
               cacheWidth: 450, // 150 * 3，按 3x DPR 缓存
-              errorBuilder: (_, _, _) =>
-                  Container(height: 100, color: CupertinoColors.systemGrey5),
             ),
           ),
           Padding(
@@ -545,22 +522,14 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipOval(
-            child: Image.network(
-              comment['avatar']!,
+            child: NetworkImageWidget(
+              src: comment['avatar']!,
               width: 40,
               height: 40,
               fit: BoxFit.cover,
               cacheWidth: 120, // 40 * 3，按 3x DPR 缓存
-              errorBuilder: (_, _, _) => Container(
-                width: 40,
-                height: 40,
-                color: CupertinoColors.systemGrey5,
-                child: const Icon(
-                  CupertinoIcons.person_fill,
-                  size: 22,
-                  color: CupertinoColors.systemGrey3,
-                ),
-              ),
+              errorIcon: CupertinoIcons.person_fill,
+              errorIconSize: 22,
             ),
           ),
           const SizedBox(width: 12),

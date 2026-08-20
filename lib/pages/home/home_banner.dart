@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../widgets/network_image_widget.dart';
 
 class HomeBanner extends StatelessWidget {
   const HomeBanner({super.key});
@@ -53,11 +54,12 @@ class HomeBanner extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              imageUrl,
+            NetworkImageWidget(
+              src: imageUrl,
               fit: BoxFit.cover,
               cacheWidth: (MediaQuery.of(context).size.width * 3).round(), // 按 3x DPR 缓存
-              errorBuilder: (_, __, _) => Container(color: color),
+              placeholderColor: color,
+              errorIconColor: CupertinoColors.white,
             ),
             Positioned(
               left: 20,
