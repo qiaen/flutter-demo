@@ -30,6 +30,11 @@ flutter run
 
 # 运行到 Web
 flutter run -d chrome
+
+# 查看设备
+flutter devices
+# 运行到设备，包括真机
+flutter run -d xxxxxxxx
 ```
 
 ## 常用命令
