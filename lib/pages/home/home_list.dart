@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'home_detail_page.dart';
 
 class HomeList extends StatelessWidget {
@@ -71,7 +70,7 @@ class HomeList extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final item = _items[index];
-            return buildListItem(context, item);
+            return _KeepAliveListItem(item: item, builder: buildListItem);
           },
         ),
       ],
@@ -108,6 +107,7 @@ class HomeList extends StatelessWidget {
                 width: 70,
                 height: 70,
                 fit: BoxFit.cover,
+                cacheWidth: 210, // 70 * 3，按 3x DPR 缓存，避免滚动时反复解码原图导致掉帧
                 errorBuilder: (_, _, _) => Container(
                   width: 70,
                   height: 70,
@@ -174,5 +174,28 @@ class HomeList extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// 给列表项做 keep-alive，滚动出屏后不被销毁，避免图片缓存被释放导致重新解码掉帧。
+class _KeepAliveListItem extends StatefulWidget {
+  final Map<String, dynamic> item;
+  final Widget Function(BuildContext, Map<String, dynamic>) builder;
+
+  const _KeepAliveListItem({required this.item, required this.builder});
+
+  @override
+  State<_KeepAliveListItem> createState() => _KeepAliveListItemState();
+}
+
+class _KeepAliveListItemState extends State<_KeepAliveListItem>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // 必须调用，keep-alive 才能生效
+    return widget.builder(context, widget.item);
   }
 }

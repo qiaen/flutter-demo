@@ -10,18 +10,21 @@ class HomeBanner extends StatelessWidget {
       child: PageView(
         children: [
           _buildBannerItem(
+            context,
             'https://picsum.photos/seed/banner1/800/360',
             '夏日特惠',
             '全场低至五折',
             const Color(0xFFFF6B6B),
           ),
           _buildBannerItem(
+            context,
             'https://picsum.photos/seed/banner2/800/360',
             '新品上市',
             '探索最新潮流',
             const Color(0xFF4ECDC4),
           ),
           _buildBannerItem(
+            context,
             'https://picsum.photos/seed/banner3/800/360',
             '限时活动',
             '立即参与赢好礼',
@@ -33,6 +36,7 @@ class HomeBanner extends StatelessWidget {
   }
 
   Widget _buildBannerItem(
+    BuildContext context,
     String imageUrl,
     String title,
     String subtitle,
@@ -52,6 +56,7 @@ class HomeBanner extends StatelessWidget {
             Image.network(
               imageUrl,
               fit: BoxFit.cover,
+              cacheWidth: (MediaQuery.of(context).size.width * 3).round(), // 按 3x DPR 缓存
               errorBuilder: (_, __, _) => Container(color: color),
             ),
             Positioned(

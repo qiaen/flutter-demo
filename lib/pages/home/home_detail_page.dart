@@ -129,6 +129,7 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
+                cacheWidth: (MediaQuery.of(context).size.width * 3).round(), // 按 3x DPR 缓存
                 errorBuilder: (_, _, _) => Container(
                   height: 250,
                   color: CupertinoColors.systemGrey5,
@@ -394,6 +395,7 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
               width: double.infinity,
               height: 200,
               fit: BoxFit.cover,
+              cacheWidth: (MediaQuery.of(context).size.width * 3).round(), // 按 3x DPR 缓存
               errorBuilder: (_, _, _) => Container(
                 height: 200,
                 color: CupertinoColors.systemGrey5,
@@ -501,6 +503,7 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
               width: 150,
               height: 100,
               fit: BoxFit.cover,
+              cacheWidth: 450, // 150 * 3，按 3x DPR 缓存
               errorBuilder: (_, _, _) =>
                   Container(height: 100, color: CupertinoColors.systemGrey5),
             ),
@@ -547,6 +550,7 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
               width: 40,
               height: 40,
               fit: BoxFit.cover,
+              cacheWidth: 120, // 40 * 3，按 3x DPR 缓存
               errorBuilder: (_, _, _) => Container(
                 width: 40,
                 height: 40,
