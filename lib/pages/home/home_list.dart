@@ -52,45 +52,39 @@ class HomeList extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             '为你推荐',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        const SizedBox(height: 12),
         ListView.separated(
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(), // 控制是局部上下滚动还是整个页面滚动
           itemCount: _items.length,
           separatorBuilder: (_, _) => const Padding(
             padding: EdgeInsets.only(left: 90),
             child: SizedBox(
               height: 1,
               child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: CupertinoColors.systemGrey5,
-                ),
+                decoration: BoxDecoration(color: CupertinoColors.systemGrey5),
               ),
             ),
           ),
           itemBuilder: (context, index) {
             final item = _items[index];
-            return _buildListItem(context, item);
+            return buildListItem(context, item);
           },
         ),
       ],
     );
   }
 
-  Widget _buildListItem(BuildContext context, Map<String, dynamic> item) {
+  Widget buildListItem(BuildContext context, Map<String, dynamic> item) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque, // 关键！透明空白区域也可以响应点击
       onTap: () {
-        Navigator.of(context, rootNavigator: true).push(
-          CupertinoPageRoute(
-            builder: (_) => HomeDetailPage(item: item),
-          ),
-        );
+        Navigator.of(
+          context,
+          // rootNavigator: true, // 去掉 知识点1 绝对不能用于 Tab 内跳转详情页，只适合弹窗、登录全屏页面。
+        ).push(CupertinoPageRoute(builder: (_) => HomeDetailPage(item: item)));
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -140,8 +134,10 @@ class HomeList extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(25, 0, 122, 255),
                       borderRadius: BorderRadius.circular(4),
