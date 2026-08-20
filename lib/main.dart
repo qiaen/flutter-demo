@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const CupertinoApp(
       title: 'Flutter Demo',
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       theme: CupertinoThemeData(
         brightness: Brightness.light, // 控制项目暗黑模式 / 日间模式
         primaryColor: CupertinoColors.activeBlue, // 全局活跃主色调（影响图标和文字）
