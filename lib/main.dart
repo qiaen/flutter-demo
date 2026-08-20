@@ -1,14 +1,10 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'pages/home/home_page.dart';
 import 'pages/events/events_page.dart';
 import 'pages/materials/materials_page.dart';
 import 'pages/mine/mine_page.dart';
 
 void main() {
-  if (kDebugMode) {
-    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-  }
   runApp(const MyApp());
 }
 
