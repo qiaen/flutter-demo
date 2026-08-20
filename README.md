@@ -35,6 +35,19 @@ flutter run -d chrome
 flutter devices
 # 运行到设备，包括真机
 flutter run -d xxxxxxxx
+
+# 打包（无签名的包）
+flutter build apk --release
+# 安装到真机器
+## 先查看设备
+adb devices
+### 如下
+da0ace9a        device
+## 安装
+adb -s da0ace9a install build/app/outputs/flutter-apk/app-release.apk
+## 或者 flutter install --release 安装生产包到手机
+flutter install --release
+
 ```
 
 ## 常用命令
