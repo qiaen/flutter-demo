@@ -1,10 +1,20 @@
 import 'package:flutter/cupertino.dart';
+// class HomeDetailPage extends StatelessWidget { 无状态，内部不能用setState修改值
+// 下面改成有状态组件
 
-class HomeDetailPage extends StatelessWidget {
+class HomeDetailPage extends StatefulWidget {
   final Map<String, dynamic> item;
-
   const HomeDetailPage({super.key, required this.item});
 
+  @override
+  State<HomeDetailPage> createState() => _HomeDetailPageState();
+}
+
+class _HomeDetailPageState extends State<HomeDetailPage> {
+  // final Map<String, dynamic> item;
+
+  // const HomeDetailPage({super.key, required this.item});
+  bool isFavorited = false;
   // 模拟富文本段落，用于测试长页面滚动
   static const List<Map<String, String>> _richSections = [
     {
@@ -105,16 +115,17 @@ class HomeDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text(item['title'] as String),
+        middle: Text(widget.item['title'] as String),
       ),
       child: SafeArea(
+        bottom: true,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 头图
               Image.network(
-                item['image'] as String,
+                widget.item['image'] as String,
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
@@ -138,13 +149,15 @@ class HomeDetailPage extends StatelessWidget {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(25, 0, 122, 255),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        item['tag'] as String,
+                        widget.item['tag'] as String,
                         style: const TextStyle(
                           fontSize: 13,
                           color: CupertinoColors.activeBlue,
@@ -155,7 +168,7 @@ class HomeDetailPage extends StatelessWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        item['title'] as String,
+                        widget.item['title'] as String,
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -170,7 +183,7 @@ class HomeDetailPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
-                  item['desc'] as String,
+                  widget.item['desc'] as String,
                   style: const TextStyle(
                     fontSize: 16,
                     color: CupertinoColors.systemGrey,
@@ -188,8 +201,10 @@ class HomeDetailPage extends StatelessWidget {
               const SizedBox(height: 16),
               Container(height: 8, color: CupertinoColors.systemGrey6),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 20,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -209,23 +224,31 @@ class HomeDetailPage extends StatelessWidget {
               // ---- 相关推荐 ----
               Container(height: 8, color: CupertinoColors.systemGrey6),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  // horizontal: 16,
+                  vertical: 20,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      '相关推荐',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: const Text(
+                        '相关推荐',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
+
                     const SizedBox(height: 12),
                     SizedBox(
                       height: 170,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(left: 16, right: 6),
+                        // physics: const ClampingScrollPhysics(), // 关闭回弹效果，不建议
                         children: [
                           _buildRecommendCard(
                             'https://picsum.photos/seed/rec1/300/200',
@@ -257,8 +280,10 @@ class HomeDetailPage extends StatelessWidget {
               // ---- 用户评论 ----
               Container(height: 8, color: CupertinoColors.systemGrey6),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 20,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -290,26 +315,51 @@ class HomeDetailPage extends StatelessWidget {
               // ---- 底部操作 ----
               const SizedBox(height: 20),
               Container(height: 1, color: CupertinoColors.systemGrey5),
+
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    _buildActionButton(CupertinoIcons.heart, '收藏'),
+                    _buildActionButton(
+                      icon: CupertinoIcons.heart,
+                      label: '收藏',
+                      isActive: isFavorited,
+                      onTap: () {
+                        print("收藏");
+                        setState(() {
+                          isFavorited = !isFavorited;
+                        });
+                      },
+                    ),
                     const SizedBox(width: 24),
-                    _buildActionButton(CupertinoIcons.chat_bubble, '评论'),
+                    _buildActionButton(
+                      icon: CupertinoIcons.chat_bubble,
+                      label: '评论',
+                      onTap: () {
+                        print("评论");
+                      },
+                    ),
                     const SizedBox(width: 24),
-                    _buildActionButton(CupertinoIcons.share, '分享'),
+                    _buildActionButton(
+                      icon: CupertinoIcons.share,
+                      label: '分享',
+                      onTap: () {
+                        print("分享");
+                      },
+                    ),
                     const Spacer(),
                     CupertinoButton.filled(
                       onPressed: () {},
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 10),
+                        horizontal: 24,
+                        vertical: 10,
+                      ),
                       child: const Text('开始探索'),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              // const SizedBox(height: 30),
             ],
           ),
         ),
@@ -326,10 +376,7 @@ class HomeDetailPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             section['title']!,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: 12),
@@ -346,8 +393,11 @@ class HomeDetailPage extends StatelessWidget {
                 height: 200,
                 color: CupertinoColors.systemGrey5,
                 child: const Center(
-                  child: Icon(CupertinoIcons.photo, size: 40,
-                      color: CupertinoColors.systemGrey3),
+                  child: Icon(
+                    CupertinoIcons.photo,
+                    size: 40,
+                    color: CupertinoColors.systemGrey3,
+                  ),
                 ),
               ),
             ),
@@ -440,17 +490,14 @@ class HomeDetailPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(11)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
             child: Image.network(
               image,
               width: 150,
               height: 100,
               fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => Container(
-                height: 100,
-                color: CupertinoColors.systemGrey5,
-              ),
+              errorBuilder: (_, _, _) =>
+                  Container(height: 100, color: CupertinoColors.systemGrey5),
             ),
           ),
           Padding(
@@ -499,8 +546,11 @@ class HomeDetailPage extends StatelessWidget {
                 width: 40,
                 height: 40,
                 color: CupertinoColors.systemGrey5,
-                child: const Icon(CupertinoIcons.person_fill,
-                    size: 22, color: CupertinoColors.systemGrey3),
+                child: const Icon(
+                  CupertinoIcons.person_fill,
+                  size: 22,
+                  color: CupertinoColors.systemGrey3,
+                ),
               ),
             ),
           ),
@@ -531,25 +581,38 @@ class HomeDetailPage extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   comment['content']!,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    height: 1.5,
-                  ),
+                  style: const TextStyle(fontSize: 14, height: 1.5),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: const [
-                    Icon(CupertinoIcons.heart, size: 14,
-                        color: CupertinoColors.systemGrey3),
+                    Icon(
+                      CupertinoIcons.heart,
+                      size: 14,
+                      color: CupertinoColors.systemGrey3,
+                    ),
                     SizedBox(width: 4),
-                    Text('12', style: TextStyle(fontSize: 12,
-                        color: CupertinoColors.systemGrey3)),
+                    Text(
+                      '12',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: CupertinoColors.systemGrey3,
+                      ),
+                    ),
                     SizedBox(width: 20),
-                    Icon(CupertinoIcons.chat_bubble, size: 14,
-                        color: CupertinoColors.systemGrey3),
+                    Icon(
+                      CupertinoIcons.chat_bubble,
+                      size: 14,
+                      color: CupertinoColors.systemGrey3,
+                    ),
                     SizedBox(width: 4),
-                    Text('回复', style: TextStyle(fontSize: 12,
-                        color: CupertinoColors.systemGrey3)),
+                    Text(
+                      '回复',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: CupertinoColors.systemGrey3,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -560,19 +623,43 @@ class HomeDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(IconData icon, String label) {
-    return Column(
-      children: [
-        Icon(icon, size: 22, color: CupertinoColors.systemGrey),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: CupertinoColors.systemGrey,
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    bool isActive = false,
+  }) {
+    return CupertinoButton(
+      onPressed: onTap,
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          Icon(
+            isActive ? getFilledIcon(icon) : icon,
+            size: 22,
+            color: isActive
+                ? CupertinoColors.systemRed
+                : CupertinoColors.systemGrey,
           ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: isActive
+                  ? CupertinoColors.systemRed
+                  : CupertinoColors.systemGrey,
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  IconData getFilledIcon(IconData icon) {
+    if (icon == CupertinoIcons.heart) {
+      return CupertinoIcons.heart_fill;
+    }
+    return icon;
   }
 }
