@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'home_detail_page.dart';
 
 class HomeList extends StatelessWidget {
@@ -83,8 +84,18 @@ class HomeList extends StatelessWidget {
       onTap: () {
         Navigator.of(
           context,
-          // rootNavigator: true, // 去掉 知识点1 绝对不能用于 Tab 内跳转详情页，只适合弹窗、登录全屏页面。
+          rootNavigator: true, //  知识点1 去掉的话，二级页面会有底部tab
         ).push(CupertinoPageRoute(builder: (_) => HomeDetailPage(item: item)));
+
+        // Navigator.of(
+        //   context,
+        //   rootNavigator: true,
+        //   MaterialPageRoute(builder: (_) => HomeDetailPage(item: item)),
+        // );
+        // Navigator.of(
+        //   context,
+        //   rootNavigator: true, // 知识点1 去掉的话，二级页面会有底部tab。
+        // ).push(MaterialPageRoute(builder: (_) => HomeDetailPage(item: item)));
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

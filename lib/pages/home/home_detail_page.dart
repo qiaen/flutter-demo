@@ -118,7 +118,7 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
         middle: Text(widget.item['title'] as String),
       ),
       child: SafeArea(
-        bottom: true,
+        bottom: false,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,6 +360,11 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
                 ),
               ),
               // const SizedBox(height: 30),
+              SizedBox(
+                height: MediaQuery.of(context)
+                    .padding
+                    .bottom, // 自动读取距离底部的高度，比设置安全距离好点，安全距离底部会留padding，导致滚动不到
+              ),
             ],
           ),
         ),
