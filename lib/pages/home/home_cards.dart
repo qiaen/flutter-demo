@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:myflutter1/pages/home/songs/songs_search.dart';
+import 'package:myflutter1/pages/home/webview_page.dart';
 
 class HomeCards extends StatelessWidget {
   const HomeCards({super.key});
@@ -53,15 +54,19 @@ class HomeCards extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        // Navigator.of(context, rootNavigator: true).push(
-        //   CupertinoSheetRoute(
-        //     scrollableBuilder:
-        //         (BuildContext context, ScrollController controller) {
-        //           Widget widgetBuilder(BuildContext _) => SearchSongs();
-        //           return widgetBuilder(context);
-        //         },
-        //   ),
-        // ); // 类似小猫音乐ios 26之前的那种sheet
+        if (title == '每日签到') {
+          // 每日签到：打开 WebView
+          Navigator.of(context, rootNavigator: true).push(
+            CupertinoPageRoute(
+              builder: (_) => const WebViewPage(
+                url: 'https://koc-creator-dev.aceon.gg',
+                title: '每日签到',
+              ),
+            ),
+          );
+          return;
+        }
+        // 其它卡片：保持原跳转逻辑
         Navigator.of(
           context,
           rootNavigator: true,
