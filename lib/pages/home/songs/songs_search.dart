@@ -79,6 +79,7 @@ class _SearchSongsState extends State<SearchSongs> {
             Expanded(
               child: _loading
                   ? const Center(child: CupertinoActivityIndicator(radius: 20))
+                  // 需求1 点击歌曲名称进入歌曲详情页，你帮我写一个详情页面，传入n，n就是index，然后在歌曲详情页使用getSongByN这个接口，获取详情显示出来，注意ui符合苹果风格
                   : ListView.builder(
                       itemCount: searchResults.length,
                       itemBuilder: (context, index) {

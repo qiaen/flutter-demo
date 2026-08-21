@@ -15,4 +15,14 @@ class ApiSongs {
     );
     return res;
   }
+
+  /// 获取详情，俩接口一样，只是多个个n参数
+  static Future<ApiResponse<ResSongInfo>> getSongByN(ReqGetSongs params) async {
+    final res = await Http.get<ResSongInfo>(
+      '', // "/songs"
+      ResSongInfo.fromJson,
+      params: params.toQuery(),
+    );
+    return res;
+  }
 }
