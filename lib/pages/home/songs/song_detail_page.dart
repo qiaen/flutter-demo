@@ -87,69 +87,76 @@ class _SongDetailPageState extends State<SongDetailPage> {
 
   Widget _buildContent() {
     final info = _info!;
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      children: [
-        // 头部信息
-        Center(
-          child: Column(
-            children: [
-              const Icon(
-                CupertinoIcons.music_note,
-                size: 72,
-                color: CupertinoColors.systemGrey3,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                info.title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+    return CustomScrollView(
+      slivers: [
+        CupertinoSliverRefreshControl(onRefresh: _loadDetail),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              // 头部信息
+              Center(
+                child: Column(
+                  children: [
+                    const Icon(
+                      CupertinoIcons.double_music_note,
+                      size: 72,
+                      color: CupertinoColors.systemGrey3,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      info.title,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      "${info.singer} · ${info.album}",
+                      style: const TextStyle(color: CupertinoColors.systemGrey),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "时长 ${info.duration}　歌词状态：${info.lyricStatus}",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: CupertinoColors.systemGrey2,
+                      ),
+                    ),
+                  ],
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 6),
-              Text(
-                "${info.singer} · ${info.album}",
-                style: const TextStyle(color: CupertinoColors.systemGrey),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "时长 ${info.duration}　歌词状态：${info.lyricStatus}",
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: CupertinoColors.systemGrey2,
+              const SizedBox(height: 20),
+
+              // 播放链接（各音质）
+              const _SectionTitle("播放链接"),
+              _buildPlayUrls(info.playUrl),
+              const SizedBox(height: 20),
+
+              // 歌词
+              const _SectionTitle("歌词"),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: CupertinoColors.systemGrey6,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  info.lyric.isEmpty ? "暂无歌词" : info.lyric,
+                  style: const TextStyle(fontSize: 13, height: 1.6),
                 ),
               ),
-            ],
+              SizedBox(
+                height: MediaQuery.of(
+                  context,
+                ).padding.bottom, // 自动读取距离底部的高度，比设置安全距离好点，安全距离底部会留padding，导致滚动不到
+              ),
+            ]),
           ),
-        ),
-        const SizedBox(height: 20),
-
-        // 播放链接（各音质）
-        const _SectionTitle("播放链接"),
-        _buildPlayUrls(info.playUrl),
-        const SizedBox(height: 20),
-
-        // 歌词
-        const _SectionTitle("歌词"),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: CupertinoColors.systemGrey6,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            info.lyric.isEmpty ? "暂无歌词" : info.lyric,
-            style: const TextStyle(fontSize: 13, height: 1.6),
-          ),
-        ),
-        SizedBox(
-          height: MediaQuery.of(
-            context,
-          ).padding.bottom, // 自动读取距离底部的高度，比设置安全距离好点，安全距离底部会留padding，导致滚动不到
         ),
       ],
     );
