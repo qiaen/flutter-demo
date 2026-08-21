@@ -18,6 +18,9 @@ class _SearchSongsState extends State<SearchSongs> {
   final TextEditingController _songKeyword = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  /// 搜索中标记，控制 loading 显示
+  bool _loading = false;
+
   @override
   void initState() {
     super.initState();
@@ -34,8 +37,22 @@ class _SearchSongsState extends State<SearchSongs> {
   /// 搜索完成，即用户点击键盘搜索按钮 void表示这个函数没有返回，如果是 Int _onSearch表示返回数字
   Future<void> _onSearch(String value) async {
     debugPrint(value);
-    final res = await ApiSongs.getSongs("庙堂之外", "1", "f84ao9lMF_q7husBWRfgUw");
-    print(res.data);
+    setState(() => _loading = true);
+    final res = await ApiSongs.getSongs(
+      ReqGetSongs(msg: value, token: "f84ao9lMF_q7husBWRfgUw"),
+    );
+    setState(() => _loading = false);
+    // result 已在 ApiResponse 中根据 code==200 && data!=null 自动判断
+    if (res.result) {
+      setState(() {
+        searchResults
+          ..clear()
+          ..addAll(res.data!.songs);
+      });
+    } else {
+      // 失败：可按需根据 res.code / res.msg 自行处理
+      debugPrint("搜索失败：code=${res.code}, msg=${res.msg}");
+    }
   }
 
   // 模拟搜索结果数据
@@ -45,6 +62,7 @@ class _SearchSongsState extends State<SearchSongs> {
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(middle: Text("搜索")),
       child: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             Padding(
@@ -59,21 +77,23 @@ class _SearchSongsState extends State<SearchSongs> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: searchResults.length,
-                itemBuilder: (context, index) {
-                  final item = searchResults[index];
-                  return CupertinoListTile(
-                    title: Text(item["歌曲名称"] ?? ""),
-                    subtitle: Text("${item["歌手"]} · ${item["时长"]}"),
-                    trailing: const Icon(
-                      CupertinoIcons.double_music_note,
-                      color: CupertinoColors.systemGrey4,
-                      size: 14,
+              child: _loading
+                  ? const Center(child: CupertinoActivityIndicator(radius: 20))
+                  : ListView.builder(
+                      itemCount: searchResults.length,
+                      itemBuilder: (context, index) {
+                        final item = searchResults[index];
+                        return CupertinoListTile(
+                          title: Text(item.title),
+                          subtitle: Text("${item.singer} · ${item.duration}"),
+                          trailing: const Icon(
+                            CupertinoIcons.double_music_note,
+                            color: CupertinoColors.systemGrey4,
+                            size: 14,
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),

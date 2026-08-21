@@ -1,3 +1,17 @@
+class ReqGetSongs {
+  final String msg;
+  final String? n; // 可选
+  final String token;
+
+  ReqGetSongs({required this.msg, this.n, required this.token});
+
+  Map<String, dynamic> toQuery() {
+    final query = <String, dynamic>{'msg': msg, 'token': token};
+    if (n != null) query['n'] = n; // 只有非 null 才加入
+    return query;
+  }
+}
+
 class ResSong {
   final int index;
   final String title;
@@ -37,9 +51,9 @@ class ResSongs {
   ResSongs({required this.count, required this.songs});
 
   factory ResSongs.fromJson(Map<String, dynamic> json) {
-    return ResSongs(
-      count: json['count'],
-      songs: (json['songs'] as List).map((e) => ResSong.fromJson(e)).toList(),
-    );
+    final songList = (json['songs'] as List<dynamic>).map((e) {
+      return ResSong.fromJson(e as Map<String, dynamic>);
+    }).toList();
+    return ResSongs(count: json['count'] as int, songs: songList);
   }
 }
