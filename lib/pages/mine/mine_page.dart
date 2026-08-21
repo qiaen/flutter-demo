@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:myflutter1/pages/mine/message_notify.dart';
 import '../../widgets/network_image_widget.dart';
 import 'user_detail_page.dart';
 
@@ -8,9 +9,7 @@ class MinePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Mine'),
-      ),
+      navigationBar: const CupertinoNavigationBar(middle: Text('Mine')),
       child: SafeArea(
         child: ListView(
           children: [
@@ -29,9 +28,7 @@ class MinePage extends StatelessWidget {
                     SizedBox(
                       width: 80,
                       height: 80,
-                      child: ClipOval(
-                        child: _UserAvatar(),
-                      ),
+                      child: ClipOval(child: _UserAvatar()),
                     ),
                     SizedBox(height: 12),
                     Text(
@@ -70,24 +67,22 @@ class MinePage extends StatelessWidget {
             // 菜单列表
             _buildSection(
               children: [
-                _buildMenuRow(CupertinoIcons.person_2_fill, '个人信息'),
-                _buildMenuRow(CupertinoIcons.settings_solid, '设置'),
-                _buildMenuRow(CupertinoIcons.bell_solid, '消息通知'),
+                _buildMenuRow(context, CupertinoIcons.person_2_fill, '个人信息'),
+                _buildMenuRow(context, CupertinoIcons.settings_solid, '设置'),
+                _buildMenuRow(context, CupertinoIcons.bell_solid, '消息通知'),
               ],
             ),
             const SizedBox(height: 12),
             _buildSection(
               children: [
-                _buildMenuRow(CupertinoIcons.heart_solid, '我的收藏'),
-                _buildMenuRow(CupertinoIcons.clock_solid, '浏览历史'),
-                _buildMenuRow(CupertinoIcons.share_solid, '分享给朋友'),
+                _buildMenuRow(context, CupertinoIcons.heart_solid, '我的收藏'),
+                _buildMenuRow(context, CupertinoIcons.clock_solid, '浏览历史'),
+                _buildMenuRow(context, CupertinoIcons.share_solid, '分享给朋友'),
               ],
             ),
             const SizedBox(height: 12),
             _buildSection(
-              children: [
-                _buildMenuRow(CupertinoIcons.info, '关于我们'),
-              ],
+              children: [_buildMenuRow(context, CupertinoIcons.info, '关于我们')],
             ),
             const SizedBox(height: 30),
           ],
@@ -108,25 +103,31 @@ class MinePage extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuRow(IconData icon, String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        children: [
-          Icon(icon, size: 22, color: CupertinoColors.activeBlue),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 16),
+  Widget _buildMenuRow(BuildContext context, IconData icon, String title) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        if (title == "消息通知") {
+          Navigator.of(
+            context,
+            rootNavigator: true, //  知识点1 去掉的话，二级页面会有底部tab
+          ).push(CupertinoPageRoute(builder: (_) => MessageNotify()));
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Icon(icon, size: 22, color: CupertinoColors.activeBlue),
+            const SizedBox(width: 12),
+            Expanded(child: Text(title, style: const TextStyle(fontSize: 16))),
+            const Icon(
+              CupertinoIcons.chevron_right,
+              size: 16,
+              color: CupertinoColors.systemGrey3,
             ),
-          ),
-          const Icon(
-            CupertinoIcons.chevron_right,
-            size: 16,
-            color: CupertinoColors.systemGrey3,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -162,18 +163,12 @@ class _StatItem extends StatelessWidget {
       children: [
         Text(
           count,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 13,
-            color: CupertinoColors.systemGrey,
-          ),
+          style: TextStyle(fontSize: 13, color: CupertinoColors.systemGrey),
         ),
       ],
     );
