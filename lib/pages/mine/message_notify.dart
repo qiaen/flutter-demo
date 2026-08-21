@@ -26,7 +26,7 @@ class _MessageNotifyState extends State<MessageNotify> {
     _initialize();
   }
 
-  /// 初始化通知插件（必须在使用前调用，否则安卓上 show() 无效）
+  /// 初始化通知插件（必须在使用前调用，否则安卓上 show() 无效），相当于js的promise
   Future<void> _initialize() async {
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
@@ -42,6 +42,7 @@ class _MessageNotifyState extends State<MessageNotify> {
       iOS: darwinSettings,
     );
     await _localNotify.initialize(initSettings);
+    // ⚠️ await 会让出事件循环，等待过程中用户可能已经退出当前页面！
     if (mounted) {
       setState(() {
         _initialized = true;
@@ -184,7 +185,7 @@ class _MessageNotifyState extends State<MessageNotify> {
                   ),
                 ),
                 // 留出底部安全距离
-                SizedBox(height: MediaQuery.paddingOf(context).bottom + 16),
+                SizedBox(height: MediaQuery.paddingOf(context).bottom),
               ],
             ),
           ),
@@ -193,3 +194,17 @@ class _MessageNotifyState extends State<MessageNotify> {
     );
   }
 }
+
+
+// 有些团队会封装一个扩展，简化写法：
+// extension StateExtension on State {
+//   void safeSetState(VoidCallback fn) {
+//     if(mounted) setState(fn);
+//   }
+// }
+
+// 调用方式
+// await api.getDetail();
+// safeSetState((){
+//   data = res;
+// });

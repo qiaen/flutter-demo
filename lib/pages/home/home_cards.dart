@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:myflutter1/pages/home/songs/songs_search.dart';
 
 class HomeCards extends StatelessWidget {
   const HomeCards({super.key});
@@ -11,6 +12,7 @@ class HomeCards extends StatelessWidget {
         children: [
           Expanded(
             child: _buildCard(
+              context: context,
               icon: CupertinoIcons.gift_fill,
               title: '每日签到',
               subtitle: '领积分换好礼',
@@ -20,6 +22,7 @@ class HomeCards extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: _buildCard(
+              context: context,
               icon: CupertinoIcons.star_fill,
               title: '热门推荐',
               subtitle: '精选内容合集',
@@ -29,6 +32,7 @@ class HomeCards extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: _buildCard(
+              context: context,
               icon: CupertinoIcons.flame_fill,
               title: '排行榜',
               subtitle: '看看谁最火',
@@ -41,13 +45,28 @@ class HomeCards extends StatelessWidget {
   }
 
   Widget _buildCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
     required Color color,
   }) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        // Navigator.of(context, rootNavigator: true).push(
+        //   CupertinoSheetRoute(
+        //     scrollableBuilder:
+        //         (BuildContext context, ScrollController controller) {
+        //           Widget widgetBuilder(BuildContext _) => SearchSongs();
+        //           return widgetBuilder(context);
+        //         },
+        //   ),
+        // ); // 类似小猫音乐ios 26之前的那种sheet
+        Navigator.of(
+          context,
+          rootNavigator: true,
+        ).push(CupertinoPageRoute(builder: (_) => SearchSongs()));
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
@@ -60,19 +79,13 @@ class HomeCards extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 11,
-                color: CupertinoColors.systemGrey,
-              ),
+              style: TextStyle(fontSize: 11, color: CupertinoColors.systemGrey),
               textAlign: TextAlign.center,
             ),
           ],
