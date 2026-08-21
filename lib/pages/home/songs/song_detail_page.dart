@@ -151,9 +151,9 @@ class _SongDetailPageState extends State<SongDetailPage> {
                 ),
               ),
               SizedBox(
-                height: MediaQuery.of(
-                  context,
-                ).padding.bottom, // 自动读取距离底部的高度，比设置安全距离好点，安全距离底部会留padding，导致滚动不到
+                height: MediaQuery.of(context)
+                    .padding
+                    .bottom, // 自动读取距离底部的高度，比设置安全距离好点，安全距离底部会留padding，导致滚动不到
               ),
             ]),
           ),
