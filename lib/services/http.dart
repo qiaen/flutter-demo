@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+/// 通用参数返回
 class ApiResponse<T> {
   final int code;
   final String msg;
@@ -9,12 +10,14 @@ class ApiResponse<T> {
 
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,
-    T Function(dynamic) fromData,
+    T Function(Map<String, dynamic>) fromData,
   ) {
     return ApiResponse(
       code: json['code'],
-      message: json['msg'],
-      data: json['data'] != null ? fromData(json['data']) : null,
+      msg: json['msg'],
+      data: json['data'] != null
+          ? fromData(json['data'] as Map<String, dynamic>)
+          : null,
     );
   }
 }
@@ -44,5 +47,23 @@ class Http {
           ),
         );
 
-  // static Future<A>
+  /// GET 请求
+  static Future<ApiResponse<T>> get<T>(
+    String path,
+    T Function(Map<String, dynamic>) fromData, {
+    Map<String, dynamic>? params,
+  }) async {
+    final response = await dio.get(path, queryParameters: params);
+    return ApiResponse.fromJson(response.data, fromData);
+  }
+
+  /// POST 请求
+  static Future<ApiResponse<T>> post<T>(
+    String path,
+    T Function(Map<String, dynamic>) fromData, {
+    Map<String, dynamic>? params,
+  }) async {
+    final response = await dio.post(path, data: params);
+    return ApiResponse.fromJson(response.data, fromData);
+  }
 }
