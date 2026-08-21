@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:myflutter1/apis/songs.dart';
+import 'package:myflutter1/apis/songs_model.dart';
 // import 'package:flutter/material.dart';
 
 class SearchSongs extends StatefulWidget {
@@ -30,31 +32,14 @@ class _SearchSongsState extends State<SearchSongs> {
   }
 
   /// 搜索完成，即用户点击键盘搜索按钮 void表示这个函数没有返回，如果是 Int _onSearch表示返回数字
-  void _onSearch(String value) {
+  Future<void> _onSearch(String value) async {
     debugPrint(value);
+    final res = await ApiSongs.getSongs("庙堂之外", "1", "f84ao9lMF_q7husBWRfgUw");
+    print(res.data);
   }
 
   // 模拟搜索结果数据
-  final List<Map<String, String>> searchResults = [
-    {
-      "song_title": "庙堂之外",
-      "pay": "付费",
-      "song_mid": "001k6sxm1dA47V",
-      "singer_name": "陈楚生",
-    },
-    {
-      "song_title": "平凡之路",
-      "pay": "免费",
-      "song_mid": "002abcde12345",
-      "singer_name": "朴树",
-    },
-    {
-      "song_title": "演员",
-      "pay": "付费",
-      "song_mid": "003xyz987654",
-      "singer_name": "薛之谦",
-    },
-  ];
+  final List<ResSong> searchResults = [];
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -79,8 +64,8 @@ class _SearchSongsState extends State<SearchSongs> {
                 itemBuilder: (context, index) {
                   final item = searchResults[index];
                   return CupertinoListTile(
-                    title: Text(item["song_title"] ?? ""),
-                    subtitle: Text("${item["singer_name"]} · ${item["pay"]}"),
+                    title: Text(item["歌曲名称"] ?? ""),
+                    subtitle: Text("${item["歌手"]} · ${item["时长"]}"),
                     trailing: const Icon(
                       CupertinoIcons.double_music_note,
                       color: CupertinoColors.systemGrey4,

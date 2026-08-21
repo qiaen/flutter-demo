@@ -6,18 +6,29 @@ class ApiResponse<T> {
   final String msg;
   final T? data;
 
-  ApiResponse({required this.code, required this.msg, this.data});
+  /// 请求是否成功：后端约定 code == 200 且 data 不为空时为 true。
+  /// 外部只需判断 result 即可，无需再手写 res.code == 200 && res.data != null。
+  final bool result;
+
+  ApiResponse({
+    required this.code,
+    required this.msg,
+    this.data,
+    required this.result,
+  });
 
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,
     T Function(Map<String, dynamic>) fromData,
   ) {
+    final int code = json['code'];
+    final bool hasData = json['data'] != null;
+    final bool result = code == 200 && hasData;
     return ApiResponse(
-      code: json['code'],
-      msg: json['msg'],
-      data: json['data'] != null
-          ? fromData(json['data'] as Map<String, dynamic>)
-          : null,
+      code: code,
+      msg: json['msg'] ?? '',
+      data: hasData ? fromData(json['data'] as Map<String, dynamic>) : null,
+      result: result,
     );
   }
 }

@@ -1,4 +1,4 @@
-class Song {
+class ResSong {
   final int index;
   final String title;
   final String singer;
@@ -7,7 +7,7 @@ class Song {
   final String songId;
   final String songMid;
 
-  Song({
+  ResSong({
     required this.index,
     required this.title,
     required this.singer,
@@ -17,8 +17,8 @@ class Song {
     required this.songMid,
   });
 
-  factory Song.fromJson(Map<String, dynamic> json) {
-    return Song(
+  factory ResSong.fromJson(Map<String, dynamic> json) {
+    return ResSong(
       index: json['序号'], // 这里是汉字，因为接口的key就是汉字
       title: json['歌曲名称'],
       singer: json['歌手'],
@@ -30,16 +30,16 @@ class Song {
   }
 }
 
-class SongsResponse {
+class ResSongs {
   final int count;
-  final List<Song> songs;
+  final List<ResSong> songs;
 
-  SongsResponse({required this.count, required this.songs});
+  ResSongs({required this.count, required this.songs});
 
-  factory SongsResponse.fromJson(Map<String, dynamic> json) {
-    return SongsResponse(
+  factory ResSongs.fromJson(Map<String, dynamic> json) {
+    return ResSongs(
       count: json['count'],
-      songs: (json['songs'] as List).map((e) => Song.fromJson(e)).toList(),
+      songs: (json['songs'] as List).map((e) => ResSong.fromJson(e)).toList(),
     );
   }
 }

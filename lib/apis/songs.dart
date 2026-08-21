@@ -4,14 +4,14 @@ import '../services/http.dart';
 /// 这里放公用的，私有的放到每个page文件夹下即可
 class ApiSongs {
   /// 获取歌曲列表（GET 示例）
-  static Future<ApiResponse<SongsResponse>> getSongs(
+  static Future<ApiResponse<ResSongs>> getSongs(
     String msg,
     String n,
     String token,
   ) async {
-    final res = await Http.get<SongsResponse>(
+    final res = await Http.get<ResSongs>(
       '/songs',
-      SongsResponse.fromJson,
+      ResSongs.fromJson,
       params: {'msg': msg, 'n': n, 'token': token},
     );
     return res;
