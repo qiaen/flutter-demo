@@ -18,6 +18,7 @@ class _MessageNotifyState extends State<MessageNotify> {
       FlutterLocalNotificationsPlugin();
 
   bool _initialized = false;
+  int _notifyId = 0;
 
   @override
   void initState() {
@@ -30,7 +31,16 @@ class _MessageNotifyState extends State<MessageNotify> {
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
-    const initSettings = InitializationSettings(android: androidSettings);
+    const darwinSettings = DarwinInitializationSettings(
+      // 在前台时是否展示通知横幅/声音（iOS 需要，否则 App 在前台时看不到）
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: darwinSettings,
+    );
     await _localNotify.initialize(initSettings);
     if (mounted) {
       setState(() {
@@ -39,8 +49,9 @@ class _MessageNotifyState extends State<MessageNotify> {
     }
   }
 
-  /// 请求通知权限（安卓 13+ 需要）
+  /// 请求通知权限（安卓 13+ / iOS 均需要）
   Future<void> _requestPermission() async {
+    // 安卓 13+ 运行时权限
     final androidImpl = _localNotify
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
@@ -48,6 +59,12 @@ class _MessageNotifyState extends State<MessageNotify> {
     if (androidImpl != null) {
       await androidImpl.requestNotificationsPermission();
     }
+    // iOS 权限请求
+    await _localNotify
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
   /// 发起本地通知
@@ -56,7 +73,7 @@ class _MessageNotifyState extends State<MessageNotify> {
     if (!_initialized) {
       await _initialize();
     }
-    // 先请求权限，避免安卓 13+ 未授权导致无效果
+    // 先请求权限，避免未授权导致无效果
     await _requestPermission();
 
     const androidDetail = AndroidNotificationDetails(
@@ -66,9 +83,17 @@ class _MessageNotifyState extends State<MessageNotify> {
       importance: Importance.high,
       priority: Priority.high,
     );
-    const notifyDetail = NotificationDetails(android: androidDetail);
+    const darwinDetail = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+    const notifyDetail = NotificationDetails(
+      android: androidDetail,
+      iOS: darwinDetail,
+    );
     await _localNotify.show(
-      DateTime.now().millisecond,
+      _notifyId++,
       "中国福利彩票中心",
       "恭喜您！ 您于 2026 年 8 月 21 日投注的中国福利彩票双色球（第 2026102 期），经开奖系统比对，您所选号码与当期开奖号码完全一致，喜中一等奖 1 注！",
       notifyDetail,
