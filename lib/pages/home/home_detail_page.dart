@@ -210,34 +210,34 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(25, 0, 122, 255),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                widget.item['tag'] as String,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: CupertinoColors.activeBlue,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                widget.item['title'] as String,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                            // Container(
+                            //   padding: const EdgeInsets.symmetric(
+                            //     horizontal: 10,
+                            //     vertical: 4,
+                            //   ),
+                            //   decoration: BoxDecoration(
+                            //     color: const Color.fromARGB(25, 0, 122, 255),
+                            //     borderRadius: BorderRadius.circular(6),
+                            //   ),
+                            //   child: Text(
+                            //     widget.item['tag'] as String,
+                            //     style: const TextStyle(
+                            //       fontSize: 13,
+                            //       color: CupertinoColors.activeBlue,
+                            //       fontWeight: FontWeight.w500,
+                            //     ),
+                            //   ),
+                            // ),
+                            // const SizedBox(width: 10),
+                            // Expanded(
+                            //   child: Text(
+                            //     widget.item['title'] as String,
+                            //     style: const TextStyle(
+                            //       fontSize: 22,
+                            //       fontWeight: FontWeight.bold,
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -431,7 +431,9 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
                       ),
                       // const SizedBox(height: 30),
                       SizedBox(
-                        height: MediaQuery.of(context).padding.bottom, // 自动读取距离底部的高度，比设置安全距离好点，安全距离底部会留padding，导致滚动不到
+                        height: MediaQuery.of(context)
+                            .padding
+                            .bottom, // 自动读取距离底部的高度，比设置安全距离好点，安全距离底部会留padding，导致滚动不到
                       ),
                     ],
                   ),
