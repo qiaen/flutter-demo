@@ -1,9 +1,455 @@
 import 'package:flutter/cupertino.dart';
 
+import '../../services/storage.dart';
 import '../../widgets/network_image_widget.dart';
 
-// class HomeDetailPage extends StatelessWidget { 无状态，内部不能用setState修改值
-// 下面改成有状态组件
+/// 详情页相关常量与共享样式，集中管理避免散落重复
+class _DetailStyle {
+  static const double imageHeight = 250;
+  static const double navBarHeight = 44;
+  static const double horizontalPadding = 16;
+  static const String favKeyPrefix = 'fav_'; // 收藏状态 key 前缀，后接 item 唯一 id
+
+  static const TextStyle sectionTitle = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  );
+  static const TextStyle bodyText = TextStyle(
+    fontSize: 15,
+    height: 1.8,
+    letterSpacing: 0.3,
+  );
+  static const TextStyle descText = TextStyle(
+    fontSize: 16,
+    color: CupertinoColors.systemGrey,
+    height: 1.6,
+  );
+  static const TextStyle tipTitle = TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.w600,
+  );
+  static const TextStyle tipDesc = TextStyle(
+    fontSize: 13,
+    color: CupertinoColors.systemGrey,
+    height: 1.4,
+  );
+  static const TextStyle cardTitle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+  );
+  static const TextStyle cardSubtitle = TextStyle(
+    fontSize: 12,
+    color: CupertinoColors.systemGrey,
+  );
+  static const TextStyle actionLabel = TextStyle(fontSize: 11);
+}
+
+/// 顶部大图 + 悬浮标题（固定不随内容滚动变化，放在 SliverToBoxAdapter）
+class _HeaderImage extends StatelessWidget {
+  final String image;
+  final String title;
+
+  const _HeaderImage(this.image, this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.bottomLeft,
+      children: [
+        NetworkImageWidget(
+          src: image,
+          width: double.infinity,
+          height: _DetailStyle.imageHeight,
+          fit: BoxFit.cover,
+          cacheWidth: (MediaQuery.of(context).size.width * 3).round(),
+        ),
+        Container(
+          width: double.infinity,
+          height: _DetailStyle.imageHeight,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromRGBO(0, 0, 0, 0.25),
+                Color.fromRGBO(0, 0, 0, 0),
+                Color.fromRGBO(0, 0, 0, 0.35),
+              ],
+              stops: [0.0, 0.5, 1.0],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Text(
+            title,
+            style: const TextStyle(
+              color: CupertinoColors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// 顶部悬浮导航栏：背景/标题/图标随滚动进度过渡
+/// 通过 ValueListenableBuilder 包裹，只有自身随进度重建，不影响正文
+class _FloatingNavBar extends StatelessWidget {
+  final String title;
+  final ValueNotifier<double> progress;
+
+  const _FloatingNavBar(this.title, this.progress);
+
+  @override
+  Widget build(BuildContext context) {
+    final safeTop = MediaQuery.of(context).padding.top;
+    return ValueListenableBuilder<double>(
+      valueListenable: progress,
+      builder: (context, p, _) {
+        final iconColor = p > 0.5
+            ? CupertinoColors.label
+            : CupertinoColors.white;
+        return Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            color: CupertinoColors.systemBackground.withValues(alpha: p),
+            padding: EdgeInsets.only(top: safeTop),
+            child: SizedBox(
+              height: _DetailStyle.navBarHeight,
+              child: Row(
+                children: [
+                  CupertinoButton(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    onPressed: () => Navigator.of(context).maybePop(),
+                    child: Icon(CupertinoIcons.back, color: iconColor),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Opacity(
+                        opacity: p,
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            color: CupertinoColors.label,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  CupertinoButton(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    onPressed: () => debugPrint('编辑'),
+                    child: Icon(CupertinoIcons.pencil, color: iconColor),
+                  ),
+                  CupertinoButton(
+                    padding: const EdgeInsets.only(right: 12, left: 4),
+                    onPressed: () => debugPrint('更多'),
+                    child: Icon(
+                      CupertinoIcons.ellipsis_vertical,
+                      color: iconColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// 正文段落卡片
+class _RichSection extends StatelessWidget {
+  final Map<String, String> section;
+
+  const _RichSection(this.section);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: _DetailStyle.horizontalPadding,
+          ),
+          child: Text(section['title']!, style: _DetailStyle.sectionTitle),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: _DetailStyle.horizontalPadding,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: NetworkImageWidget(
+              src: section['image']!,
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+              cacheWidth: (MediaQuery.of(context).size.width * 3).round(),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: _DetailStyle.horizontalPadding,
+          ),
+          child: Text(section['body']!, style: _DetailStyle.bodyText),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: _DetailStyle.horizontalPadding,
+          ),
+          child: Container(height: 1, color: CupertinoColors.systemGrey5),
+        ),
+      ],
+    );
+  }
+}
+
+/// 实用贴士卡片
+class _TipCard extends StatelessWidget {
+  final Map<String, dynamic> tip;
+
+  const _TipCard(this.tip);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: CupertinoColors.systemBackground,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: CupertinoColors.systemGrey5),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(25, 0, 122, 255),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              tip['icon'] as IconData,
+              size: 18,
+              color: CupertinoColors.activeBlue,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(tip['title'] as String, style: _DetailStyle.tipTitle),
+                const SizedBox(height: 4),
+                Text(tip['desc'] as String, style: _DetailStyle.tipDesc),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 相关推荐横向卡片
+class _RecommendCard extends StatelessWidget {
+  final String image;
+  final String title;
+  final String subtitle;
+
+  const _RecommendCard(this.image, this.title, this.subtitle);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 150,
+      margin: const EdgeInsets.only(right: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: CupertinoColors.systemGrey5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
+            child: NetworkImageWidget(
+              src: image,
+              width: 150,
+              height: 100,
+              fit: BoxFit.cover,
+              cacheWidth: 450,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: _DetailStyle.cardTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(subtitle, style: _DetailStyle.cardSubtitle),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 用户评论卡片
+class _CommentCard extends StatelessWidget {
+  final Map<String, String> comment;
+
+  const _CommentCard(this.comment);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipOval(
+            child: NetworkImageWidget(
+              src: comment['avatar']!,
+              width: 40,
+              height: 40,
+              fit: BoxFit.cover,
+              cacheWidth: 120,
+              errorIcon: CupertinoIcons.person_fill,
+              errorIconSize: 22,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      comment['name']!,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      comment['time']!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: CupertinoColors.systemGrey,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  comment['content']!,
+                  style: const TextStyle(fontSize: 14, height: 1.5),
+                ),
+                const SizedBox(height: 8),
+                const Row(
+                  children: [
+                    Icon(
+                      CupertinoIcons.heart,
+                      size: 14,
+                      color: CupertinoColors.systemGrey3,
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      '12',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: CupertinoColors.systemGrey3,
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    Icon(
+                      CupertinoIcons.chat_bubble,
+                      size: 14,
+                      color: CupertinoColors.systemGrey3,
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      '回复',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: CupertinoColors.systemGrey3,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 收藏/评论/分享操作按钮
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool isActive;
+
+  const _ActionButton(
+    this.icon,
+    this.label,
+    this.onTap, {
+    this.isActive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isActive
+        ? CupertinoColors.systemRed
+        : CupertinoColors.systemGrey;
+    return CupertinoButton(
+      onPressed: onTap,
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          Icon(
+            isActive ? CupertinoIcons.heart_fill : icon,
+            size: 22,
+            color: color,
+          ),
+          const SizedBox(height: 4),
+          Text(label, style: _DetailStyle.actionLabel.copyWith(color: color)),
+        ],
+      ),
+    );
+  }
+}
 
 class HomeDetailPage extends StatefulWidget {
   final Map<String, dynamic> item;
@@ -14,32 +460,16 @@ class HomeDetailPage extends StatefulWidget {
 }
 
 class _HomeDetailPageState extends State<HomeDetailPage> {
-  // final Map<String, dynamic> item;
-
-  // const HomeDetailPage({super.key, required this.item});
   bool isFavorited = false;
 
   final ScrollController _scrollController = ScrollController();
-  double _scrollOffset = 0;
-  static const double _imageHeight = 250;
-  static const double _navBarHeight = 44;
+  // 滚动进度通知器：导航栏只监听它，正文不参与重建
+  final ValueNotifier<double> _scrollProgress = ValueNotifier<double>(0);
 
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  void _onScroll() {
-    setState(() => _scrollOffset = _scrollController.offset);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
-    super.dispose();
-  }
+  // 用于生成收藏 key 的唯一标识
+  String get _favKey =>
+      _DetailStyle.favKeyPrefix +
+      (widget.item['id'] ?? widget.item['title']).toString();
 
   // 模拟富文本段落，用于测试长页面滚动
   static const List<Map<String, String>> _richSections = [
@@ -138,16 +568,55 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    _loadFavorite();
+  }
+
+  void _onScroll() {
+    final safeTop = MediaQuery.of(context).padding.top;
+    final threshold =
+        _DetailStyle.imageHeight - _DetailStyle.navBarHeight - safeTop;
+    final p = threshold <= 0
+        ? 1.0
+        : (_scrollController.offset / threshold).clamp(0.0, 1.0);
+    // 进度无变化时跳过通知，进一步减少无效重建
+    if ((_scrollProgress.value - p).abs() > 0.01) {
+      _scrollProgress.value = p;
+    }
+  }
+
+  /// 进入页面读取收藏状态
+  Future<void> _loadFavorite() async {
+    final saved = await LocalStorage.get<bool>(
+      _favKey,
+      fromJson: (e) => e as bool,
+    );
+    if (saved != null && mounted) {
+      setState(() => isFavorited = saved);
+    }
+  }
+
+  /// 切换收藏并持久化
+  Future<void> _toggleFavorite() async {
+    final next = !isFavorited;
+    setState(() => isFavorited = next);
+    await LocalStorage.set(_favKey, next);
+    debugPrint(next ? '收藏' : '取消收藏');
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    _scrollProgress.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final title = widget.item['title'] as String;
-    final safeTop = MediaQuery.of(context).padding.top;
-    final threshold = _imageHeight - _navBarHeight - safeTop;
-    final progress = threshold <= 0
-        ? 1.0
-        : (_scrollOffset / threshold).clamp(0.0, 1.0);
-    final iconColor = progress > 0.5
-        ? CupertinoColors.label
-        : CupertinoColors.white;
 
     return CupertinoPageScaffold(
       child: SafeArea(
@@ -158,116 +627,50 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
             CustomScrollView(
               controller: _scrollController,
               slivers: [
-                // 顶部大图 + 标题悬浮
+                // 顶部大图 + 悬浮标题（独立 Sliver）
                 SliverToBoxAdapter(
-                  child: Stack(
-                    alignment: Alignment.bottomLeft,
-                    children: [
-                      NetworkImageWidget(
-                        src: widget.item['image'] as String,
-                        width: double.infinity,
-                        height: _imageHeight,
-                        fit: BoxFit.cover,
-                        cacheWidth: (MediaQuery.of(context).size.width * 3)
-                            .round(),
-                      ),
-                      Container(
-                        width: double.infinity,
-                        height: _imageHeight,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color.fromRGBO(0, 0, 0, 0.25),
-                              Color.fromRGBO(0, 0, 0, 0),
-                              Color.fromRGBO(0, 0, 0, 0.35),
-                            ],
-                            stops: [0.0, 0.5, 1.0],
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: Text(
-                          title,
-                          style: const TextStyle(
-                            color: CupertinoColors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: _HeaderImage(widget.item['image'] as String, title),
                 ),
+
+                // 描述 + 分割线（独立 Sliver）
                 SliverToBoxAdapter(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 标题 & 标签
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            // Container(
-                            //   padding: const EdgeInsets.symmetric(
-                            //     horizontal: 10,
-                            //     vertical: 4,
-                            //   ),
-                            //   decoration: BoxDecoration(
-                            //     color: const Color.fromARGB(25, 0, 122, 255),
-                            //     borderRadius: BorderRadius.circular(6),
-                            //   ),
-                            //   child: Text(
-                            //     widget.item['tag'] as String,
-                            //     style: const TextStyle(
-                            //       fontSize: 13,
-                            //       color: CupertinoColors.activeBlue,
-                            //       fontWeight: FontWeight.w500,
-                            //     ),
-                            //   ),
-                            // ),
-                            // const SizedBox(width: 10),
-                            // Expanded(
-                            //   child: Text(
-                            //     widget.item['title'] as String,
-                            //     style: const TextStyle(
-                            //       fontSize: 22,
-                            //       fontWeight: FontWeight.bold,
-                            //     ),
-                            //   ),
-                            // ),
-                          ],
-                        ),
-                      ),
                       const SizedBox(height: 16),
-                      // 内容描述
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: _DetailStyle.horizontalPadding,
+                        ),
                         child: Text(
                           widget.item['desc'] as String,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: CupertinoColors.systemGrey,
-                            height: 1.6,
-                          ),
+                          style: _DetailStyle.descText,
                         ),
                       ),
                       const SizedBox(height: 24),
                       Container(height: 1, color: CupertinoColors.systemGrey5),
+                    ],
+                  ),
+                ),
 
-                      // ---- 丰富的正文段落 ----
-                      ..._richSections.map(
-                        (section) => _buildRichSection(section),
-                      ),
+                // 正文段落列表（独立 SliverList，按需构建）
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) => _RichSection(_richSections[index]),
+                    childCount: _richSections.length,
+                  ),
+                ),
 
-                      // ---- 实用贴士 ----
+                // 实用贴士
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       const SizedBox(height: 16),
                       Container(height: 8, color: CupertinoColors.systemGrey6),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
+                          horizontal: _DetailStyle.horizontalPadding,
                           vertical: 20,
                         ),
                         child: Column(
@@ -275,40 +678,37 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
                           children: [
                             const Text(
                               '实用贴士',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: _DetailStyle.sectionTitle,
                             ),
                             const SizedBox(height: 16),
-                            ..._tips.map((tip) => _buildTipCard(tip)),
+                            ..._tips.map((tip) => _TipCard(tip)),
                           ],
                         ),
                       ),
+                    ],
+                  ),
+                ),
 
-                      // ---- 相关推荐 ----
+                // 相关推荐（横向滚动独立 Sliver）
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Container(height: 8, color: CupertinoColors.systemGrey6),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          // horizontal: 16,
-                          vertical: 20,
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
+                            const Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: _DetailStyle.horizontalPadding,
                               ),
-                              child: const Text(
+                              child: Text(
                                 '相关推荐',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: _DetailStyle.sectionTitle,
                               ),
                             ),
-
                             const SizedBox(height: 12),
                             SizedBox(
                               height: 170,
@@ -318,24 +718,23 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
                                   left: 16,
                                   right: 6,
                                 ),
-                                // physics: const ClampingScrollPhysics(), // 关闭回弹效果，不建议
-                                children: [
-                                  _buildRecommendCard(
+                                children: const [
+                                  _RecommendCard(
                                     'https://picsum.photos/seed/rec1/300/200',
                                     '周末徒步路线',
                                     '5条精选路线',
                                   ),
-                                  _buildRecommendCard(
+                                  _RecommendCard(
                                     'https://picsum.photos/seed/rec2/300/200',
                                     '城市咖啡馆',
                                     '10家必打卡',
                                   ),
-                                  _buildRecommendCard(
+                                  _RecommendCard(
                                     'https://picsum.photos/seed/rec3/300/200',
                                     '博物馆巡礼',
                                     '文化之旅',
                                   ),
-                                  _buildRecommendCard(
+                                  _RecommendCard(
                                     'https://picsum.photos/seed/rec4/300/200',
                                     '夜市美食攻略',
                                     '吃货必看',
@@ -346,27 +745,28 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
                           ],
                         ),
                       ),
+                    ],
+                  ),
+                ),
 
-                      // ---- 用户评论 ----
+                // 用户评论
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Container(height: 8, color: CupertinoColors.systemGrey6),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
+                          horizontal: _DetailStyle.horizontalPadding,
                           vertical: 20,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  '热门评论',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                Text('热门评论', style: _DetailStyle.sectionTitle),
                                 Text(
                                   '查看全部 >',
                                   style: TextStyle(
@@ -377,45 +777,42 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            ..._comments.map((c) => _buildCommentCard(c)),
+                            ..._comments.map((c) => _CommentCard(c)),
                           ],
                         ),
                       ),
+                    ],
+                  ),
+                ),
 
-                      // ---- 底部操作 ----
+                // 底部操作
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       const SizedBox(height: 20),
                       Container(height: 1, color: CupertinoColors.systemGrey5),
-
                       Padding(
                         padding: const EdgeInsets.all(16),
                         child: Row(
                           children: [
-                            _buildActionButton(
-                              icon: CupertinoIcons.heart,
-                              label: '收藏',
+                            _ActionButton(
+                              CupertinoIcons.heart,
+                              '收藏',
+                              _toggleFavorite,
                               isActive: isFavorited,
-                              onTap: () {
-                                debugPrint("收藏");
-                                setState(() {
-                                  isFavorited = !isFavorited;
-                                });
-                              },
                             ),
                             const SizedBox(width: 24),
-                            _buildActionButton(
-                              icon: CupertinoIcons.chat_bubble,
-                              label: '评论',
-                              onTap: () {
-                                debugPrint("评论");
-                              },
+                            _ActionButton(
+                              CupertinoIcons.chat_bubble,
+                              '评论',
+                              () => debugPrint('评论'),
                             ),
                             const SizedBox(width: 24),
-                            _buildActionButton(
-                              icon: CupertinoIcons.share,
-                              label: '分享',
-                              onTap: () {
-                                debugPrint("分享");
-                              },
+                            _ActionButton(
+                              CupertinoIcons.share,
+                              '分享',
+                              () => debugPrint('分享'),
                             ),
                             const Spacer(),
                             CupertinoButton.filled(
@@ -429,355 +826,20 @@ class _HomeDetailPageState extends State<HomeDetailPage> {
                           ],
                         ),
                       ),
-                      // const SizedBox(height: 30),
                       SizedBox(
-                        height: MediaQuery.of(context)
-                            .padding
-                            .bottom, // 自动读取距离底部的高度，比设置安全距离好点，安全距离底部会留padding，导致滚动不到
+                        height: MediaQuery.of(context).padding.bottom, // 自动读取距离底部的高度，比设置安全距离好点，安全距离底部会留padding，导致滚动不到
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            _buildFloatingNavBar(title, progress, iconColor),
+
+            // 悬浮导航栏：监听滚动进度，仅自身重建
+            _FloatingNavBar(title, _scrollProgress),
           ],
         ),
       ),
     );
-  }
-
-  /// 顶部悬浮导航栏：随滚动从透明渐变为背景色，标题和图标颜色同步过渡
-  Widget _buildFloatingNavBar(String title, double progress, Color iconColor) {
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: ClipRRect(
-        child: Container(
-          color: CupertinoColors.systemBackground.withValues(alpha: progress),
-          padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-          child: SizedBox(
-            height: _navBarHeight,
-            child: Row(
-              children: [
-                CupertinoButton(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  onPressed: () => Navigator.of(context).maybePop(),
-                  child: Icon(CupertinoIcons.back, color: iconColor),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Opacity(
-                      opacity: progress,
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          color: CupertinoColors.label,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                CupertinoButton(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  onPressed: () => debugPrint('编辑'),
-                  child: Icon(CupertinoIcons.pencil, color: iconColor),
-                ),
-                CupertinoButton(
-                  padding: const EdgeInsets.only(right: 12, left: 4),
-                  onPressed: () => debugPrint('更多'),
-                  child: Icon(
-                    CupertinoIcons.ellipsis_vertical,
-                    color: iconColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRichSection(Map<String, String> section) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            section['title']!,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: NetworkImageWidget(
-              src: section['image']!,
-              width: double.infinity,
-              height: 200,
-              fit: BoxFit.cover,
-              cacheWidth: (MediaQuery.of(context).size.width * 3)
-                  .round(), // 按 3x DPR 缓存
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            section['body']!,
-            style: const TextStyle(
-              fontSize: 15,
-              height: 1.8,
-              letterSpacing: 0.3,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(height: 1, color: CupertinoColors.systemGrey5),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTipCard(Map<String, dynamic> tip) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: CupertinoColors.systemBackground,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: CupertinoColors.systemGrey5),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(25, 0, 122, 255),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              tip['icon'] as IconData,
-              size: 18,
-              color: CupertinoColors.activeBlue,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  tip['title'] as String,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  tip['desc'] as String,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: CupertinoColors.systemGrey,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRecommendCard(String image, String title, String subtitle) {
-    return Container(
-      width: 150,
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: CupertinoColors.systemGrey5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
-            child: NetworkImageWidget(
-              src: image,
-              width: 150,
-              height: 100,
-              fit: BoxFit.cover,
-              cacheWidth: 450, // 150 * 3，按 3x DPR 缓存
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: CupertinoColors.systemGrey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCommentCard(Map<String, String> comment) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipOval(
-            child: NetworkImageWidget(
-              src: comment['avatar']!,
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
-              cacheWidth: 120, // 40 * 3，按 3x DPR 缓存
-              errorIcon: CupertinoIcons.person_fill,
-              errorIconSize: 22,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      comment['name']!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      comment['time']!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: CupertinoColors.systemGrey,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  comment['content']!,
-                  style: const TextStyle(fontSize: 14, height: 1.5),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: const [
-                    Icon(
-                      CupertinoIcons.heart,
-                      size: 14,
-                      color: CupertinoColors.systemGrey3,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      '12',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: CupertinoColors.systemGrey3,
-                      ),
-                    ),
-                    SizedBox(width: 20),
-                    Icon(
-                      CupertinoIcons.chat_bubble,
-                      size: 14,
-                      color: CupertinoColors.systemGrey3,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      '回复',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: CupertinoColors.systemGrey3,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    bool isActive = false,
-  }) {
-    return CupertinoButton(
-      onPressed: onTap,
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          Icon(
-            isActive ? getFilledIcon(icon) : icon,
-            size: 22,
-            color: isActive
-                ? CupertinoColors.systemRed
-                : CupertinoColors.systemGrey,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              color: isActive
-                  ? CupertinoColors.systemRed
-                  : CupertinoColors.systemGrey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  IconData getFilledIcon(IconData icon) {
-    if (icon == CupertinoIcons.heart) {
-      return CupertinoIcons.heart_fill;
-    }
-    return icon;
   }
 }
