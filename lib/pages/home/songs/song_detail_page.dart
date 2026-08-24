@@ -28,24 +28,19 @@ class _SongDetailPageState extends State<SongDetailPage> {
 
   Future<void> _loadDetail() async {
     setState(() => _loading = true);
-    try {
-      final res = await ApiSongs.getSongByN(
-        ReqGetSongs(
-          msg: widget.msg,
-          n: widget.n.toString(),
-          token: "f84ao9lMF_q7husBWRfgUw",
-        ),
-      );
-      if (res.result && res.data != null) {
-        setState(() => _info = res.data!);
-      } else {
-        setState(() => _errorMsg = res.msg.isNotEmpty ? res.msg : "获取详情失败");
-      }
-    } catch (e) {
-      setState(() => _errorMsg = "网络异常，请稍后重试");
-    } finally {
-      setState(() => _loading = false);
+    final res = await ApiSongs.getSongByN(
+      ReqGetSongs(
+        msg: widget.msg,
+        n: widget.n.toString(),
+        token: "f84ao9lMF_q7husBWRfgUw",
+      ),
+    );
+    if (res.result) {
+      setState(() => _info = res.data);
+    } else {
+      setState(() => _errorMsg = res.msg.isNotEmpty ? res.msg : "获取详情失败");
     }
+    setState(() => _loading = false);
   }
 
   @override
