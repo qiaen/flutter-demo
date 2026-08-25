@@ -366,59 +366,75 @@ class _HomeDetailPageState extends State<HomeDetailPage>
     return Container(
       color: CupertinoColors.systemBackground,
       padding: const EdgeInsets.symmetric(
-        horizontal: _DetailTokens.horizontalPadding,
+        // horizontal: _DetailTokens.horizontalPadding,
       ).copyWith(top: 22, bottom: 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 描述
-          Text(_item.desc, style: _DetailTokens.paragraph),
-          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: _DetailTokens.horizontalPadding,
+            ),
+            child: Column(
+              children: [
+                // 描述
+                Text(_item.desc, style: _DetailTokens.paragraph),
+                const SizedBox(height: 20),
 
-          // 元信息（标签）
-          meta,
-          const SizedBox(height: 24),
+                // 元信息（标签）
+                meta,
+                const SizedBox(height: 24),
 
-          // 标题
-          Text('关于这场旅程', style: _DetailTokens.sectionTitle),
-          const SizedBox(height: 12),
-          ...paragraphs,
-          const SizedBox(height: 8),
+                // 标题
+                Text('关于这场旅程', style: _DetailTokens.sectionTitle),
+                const SizedBox(height: 12),
+                ...paragraphs,
+                const SizedBox(height: 8),
 
-          // 图文段落一
-          ..._buildImageBlock(
-            image: 'https://picsum.photos/seed/detail1/1200/640',
-            caption: '老巷口的暖光',
-            text: '午后的阳光从梧桐叶的缝隙里漏下来，在老巷的青石板上碎成一地光斑。巷口的糖水铺子支起招牌，锅里的热气慢悠悠地升腾，把整个街角都熏得温柔。',
+                // 图文段落一
+                ..._buildImageBlock(
+                  image: 'https://picsum.photos/seed/detail1/1200/640',
+                  caption: '老巷口的暖光',
+                  text:
+                      '午后的阳光从梧桐叶的缝隙里漏下来，在老巷的青石板上碎成一地光斑。巷口的糖水铺子支起招牌，锅里的热气慢悠悠地升腾，把整个街角都熏得温柔。',
+                ),
+                const SizedBox(height: 8),
+
+                // 图文段落二
+                ..._buildImageBlock(
+                  image: 'https://picsum.photos/seed/detail2/1200/640',
+                  caption: '屋顶花园',
+                  text:
+                      '沿着狭窄的楼梯往上，一扇不起眼的铁门后面，竟藏着一整片屋顶花园。番茄、薄荷与月季挤在旧木箱里，城市的喧嚣在这里被推得很远很远。',
+                ),
+                const SizedBox(height: 24),
+                quote,
+                const SizedBox(height: 8),
+                _buildAuthor(),
+                const SizedBox(height: 32),
+
+                // 折叠说明
+                _buildCollapsible(),
+                const SizedBox(height: 28),
+
+                // 实用贴士
+                _buildTips(),
+                const SizedBox(height: 28),
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-
-          // 图文段落二
-          ..._buildImageBlock(
-            image: 'https://picsum.photos/seed/detail2/1200/640',
-            caption: '屋顶花园',
-            text: '沿着狭窄的楼梯往上，一扇不起眼的铁门后面，竟藏着一整片屋顶花园。番茄、薄荷与月季挤在旧木箱里，城市的喧嚣在这里被推得很远很远。',
-          ),
-          const SizedBox(height: 24),
-          quote,
-          const SizedBox(height: 8),
-          _buildAuthor(),
-          const SizedBox(height: 32),
-
-          // 折叠说明
-          _buildCollapsible(),
-          const SizedBox(height: 28),
-
-          // 实用贴士
-          _buildTips(),
-          const SizedBox(height: 28),
 
           // 相关推介
           _buildRecommendations(),
           const SizedBox(height: 28),
-
-          // 热门评论
-          _buildComments(),
+          Padding(
+            padding: const EdgeInsetsGeometry.symmetric(
+              horizontal: _DetailTokens.horizontalPadding,
+            ),
+            child:
+                // 热门评论
+                _buildComments(),
+          ),
           const SizedBox(height: 8),
         ],
       ),
@@ -430,10 +446,26 @@ class _HomeDetailPageState extends State<HomeDetailPage>
   // ============================================================
   Widget _buildTips() {
     const tips = [
-      (icon: CupertinoIcons.tram_fill, title: '交通攻略', desc: '建议乘坐地铁2号线至市中心站，从A口出步行约5分钟即可到达。周边有多条公交线路可达，自驾请导航至附近停车场。'),
-      (icon: CupertinoIcons.clock_fill, title: '最佳时间', desc: '春秋两季气候宜人，是最佳的游览季节。早晨8-10点光线柔和，非常适合拍照。避开节假日高峰时段，可以获得更好的体验。'),
-      (icon: CupertinoIcons.money_dollar_circle_fill, title: '费用参考', desc: '大部分景点免费开放，部分特色展馆门票20-50元不等。周边餐饮人均消费30-80元，建议预留充足预算品尝当地美食。'),
-      (icon: CupertinoIcons.camera_fill, title: '拍照建议', desc: '清晨和黄昏的黄金时刻最适合拍摄。携带广角镜头可以捕捉更多建筑细节，定焦大光圈镜头则适合人像和特写。'),
+      (
+        icon: CupertinoIcons.tram_fill,
+        title: '交通攻略',
+        desc: '建议乘坐地铁2号线至市中心站，从A口出步行约5分钟即可到达。周边有多条公交线路可达，自驾请导航至附近停车场。',
+      ),
+      (
+        icon: CupertinoIcons.clock_fill,
+        title: '最佳时间',
+        desc: '春秋两季气候宜人，是最佳的游览季节。早晨8-10点光线柔和，非常适合拍照。避开节假日高峰时段，可以获得更好的体验。',
+      ),
+      (
+        icon: CupertinoIcons.money_dollar_circle_fill,
+        title: '费用参考',
+        desc: '大部分景点免费开放，部分特色展馆门票20-50元不等。周边餐饮人均消费30-80元，建议预留充足预算品尝当地美食。',
+      ),
+      (
+        icon: CupertinoIcons.camera_fill,
+        title: '拍照建议',
+        desc: '清晨和黄昏的黄金时刻最适合拍摄。携带广角镜头可以捕捉更多建筑细节，定焦大光圈镜头则适合人像和特写。',
+      ),
     ];
 
     return Column(
@@ -443,8 +475,11 @@ class _HomeDetailPageState extends State<HomeDetailPage>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('实用贴士', style: _DetailTokens.sectionTitle),
-            Icon(CupertinoIcons.sparkles,
-                size: 18, color: CupertinoColors.systemGrey),
+            Icon(
+              CupertinoIcons.sparkles,
+              size: 18,
+              color: CupertinoColors.systemGrey,
+            ),
           ],
         ),
         const SizedBox(height: 14),
@@ -492,19 +527,41 @@ class _HomeDetailPageState extends State<HomeDetailPage>
   // ============================================================
   Widget _buildRecommendations() {
     const recs = [
-      (image: 'https://picsum.photos/seed/rec1/600/400', title: '周末徒步路线', desc: '5 条精选线路'),
-      (image: 'https://picsum.photos/seed/rec2/600/400', title: '城市咖啡馆', desc: '10 家必打卡'),
-      (image: 'https://picsum.photos/seed/rec3/600/400', title: '博物馆巡礼', desc: '文化之旅'),
-      (image: 'https://picsum.photos/seed/rec4/600/400', title: '夜市美食攻略', desc: '吃货必看'),
+      (
+        image: 'https://picsum.photos/seed/rec1/600/400',
+        title: '周末徒步路线',
+        desc: '5 条精选线路',
+      ),
+      (
+        image: 'https://picsum.photos/seed/rec2/600/400',
+        title: '城市咖啡馆',
+        desc: '10 家必打卡',
+      ),
+      (
+        image: 'https://picsum.photos/seed/rec3/600/400',
+        title: '博物馆巡礼',
+        desc: '文化之旅',
+      ),
+      (
+        image: 'https://picsum.photos/seed/rec4/600/400',
+        title: '夜市美食攻略',
+        desc: '吃货必看',
+      ),
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('相关推介', style: _DetailTokens.sectionTitle),
+        Padding(
+          padding: const EdgeInsetsGeometry.symmetric(
+            horizontal: _DetailTokens.horizontalPadding,
+          ),
+          child: const Text('相关推介', style: _DetailTokens.sectionTitle),
+        ),
+
         const SizedBox(height: 14),
         SizedBox(
-          height: 168,
+          height: 140,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: recs.length,
@@ -515,7 +572,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                 width: 150,
                 decoration: BoxDecoration(
                   color: CupertinoColors.systemGrey6,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: Column(
@@ -560,9 +617,24 @@ class _HomeDetailPageState extends State<HomeDetailPage>
   // ============================================================
   Widget _buildComments() {
     const comments = [
-      (name: '旅行达人小王', time: '2天前', content: '非常详细的攻略！上周末刚去了推荐的那条老街，真的是别有洞天，拍了好多好看的照片。', likes: 12),
-      (name: '摄影爱好者', time: '3天前', content: '建筑那一节写得太好了，作为一个建筑摄影爱好者，这些地方我一个都不会错过！', likes: 8),
-      (name: '美食猎人', time: '5天前', content: '照着美食地图吃了一圈，没有踩雷的！特别是那家藏在巷子里的老店，味道绝了。', likes: 5),
+      (
+        name: '旅行达人小王',
+        time: '2天前',
+        content: '非常详细的攻略！上周末刚去了推荐的那条老街，真的是别有洞天，拍了好多好看的照片。',
+        likes: 12,
+      ),
+      (
+        name: '摄影爱好者',
+        time: '3天前',
+        content: '建筑那一节写得太好了，作为一个建筑摄影爱好者，这些地方我一个都不会错过！',
+        likes: 8,
+      ),
+      (
+        name: '美食猎人',
+        time: '5天前',
+        content: '照着美食地图吃了一圈，没有踩雷的！特别是那家藏在巷子里的老店，味道绝了。',
+        likes: 5,
+      ),
     ];
 
     return Column(
@@ -613,14 +685,19 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(CupertinoIcons.heart,
-                            size: 12, color: CupertinoColors.systemGrey),
+                        const Icon(
+                          CupertinoIcons.heart,
+                          size: 12,
+                          color: CupertinoColors.systemGrey,
+                        ),
                         const SizedBox(width: 3),
-                        Text('${c.likes}',
-                            style: _DetailTokens.commentAction),
+                        Text('${c.likes}', style: _DetailTokens.commentAction),
                         const SizedBox(width: 16),
-                        const Icon(CupertinoIcons.chat_bubble,
-                            size: 12, color: CupertinoColors.systemGrey),
+                        const Icon(
+                          CupertinoIcons.chat_bubble,
+                          size: 12,
+                          color: CupertinoColors.systemGrey,
+                        ),
                         const SizedBox(width: 3),
                         const Text('回复', style: _DetailTokens.commentAction),
                       ],
