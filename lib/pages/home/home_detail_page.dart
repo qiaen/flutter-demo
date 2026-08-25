@@ -376,6 +376,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
               horizontal: _DetailTokens.horizontalPadding,
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 描述
                 Text(_item.desc, style: _DetailTokens.paragraph),
@@ -568,41 +569,52 @@ class _HomeDetailPageState extends State<HomeDetailPage>
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final rec = recs[index];
-              return Container(
-                width: 150,
-                decoration: BoxDecoration(
-                  color: CupertinoColors.systemGrey6,
-                  borderRadius: BorderRadius.circular(8),
+
+              // 判断第一个和最后一个
+              final isFirst = index == 0;
+              final isLast = index == recs.length - 1;
+
+              return Padding(
+                padding: EdgeInsets.only(
+                  left: isFirst ? 16 : 0,
+                  right: isLast ? 16 : 0,
                 ),
-                clipBehavior: Clip.antiAlias,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: NetworkImageWidget(
-                        src: rec.image,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        cacheWidth: 450,
+                child: Container(
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: CupertinoColors.systemGrey6,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: NetworkImageWidget(
+                          src: rec.image,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          cacheWidth: 450,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            rec.title,
-                            style: _DetailTokens.recTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 2),
-                          Text(rec.desc, style: _DetailTokens.recDesc),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              rec.title,
+                              style: _DetailTokens.recTitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(rec.desc, style: _DetailTokens.recDesc),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
@@ -926,6 +938,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
           CupertinoButton.filled(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             minimumSize: Size.zero,
+            borderRadius: BorderRadius.circular(6),
             onPressed: () => Navigator.of(context).maybePop(),
             child: const Text(
               '返回',
