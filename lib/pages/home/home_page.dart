@@ -13,27 +13,55 @@ class HomePage extends StatelessWidget {
       child: Column(
         children: [
           // 自定义导航栏：bg_navbar.png 背景，常驻显示（不依赖滚动）
+          // 左侧不传 → 默认显示返回按钮（点击自动 pop）
+          // 右侧插槽传入搜索按钮，点击事件在 Widget 内部自定义
           CustomAppBar(
-            title: "自定义标题",
-            onBack: () => Navigator.of(context).maybePop(),
-            onSearch: () => debugPrint("搜索"),
+            title: "",
+            showBack: false,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Image.asset(
+                'assets/images/cfl_logo_b.png',
+                height: 20,
+                fit: BoxFit.contain,
+              ),
+            ),
+            trailing: CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              onPressed: () => debugPrint("搜索"),
+              child: const Icon(
+                CupertinoIcons.search,
+                color: CupertinoColors.white,
+              ),
+            ),
           ),
+          // 需求1 页面使用背景图bg.png
           Expanded(
-            child: SafeArea(
-              top: false,
-              bottom: false,
-              child: ListView(
-                padding: const EdgeInsets.only(bottom: 20),
-                children: const [
-                  // 1. Banner 图
-                  HomeBanner(),
-                  SizedBox(height: 16),
-                  // 2. 左右排列的卡片
-                  HomeCards(),
-                  SizedBox(height: 16),
-                  // 3. 列表
-                  HomeList(),
-                ],
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/bg.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                bottom: false,
+                child: ListView(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  children: const [
+                    // 1. Banner 图
+                    HomeBanner(),
+                    SizedBox(height: 16),
+                    // 2. 左右排列的卡片
+                    HomeCards(),
+                    SizedBox(height: 16),
+                    // 3. 列表
+                    HomeList(),
+                  ],
+                ),
               ),
             ),
           ),
