@@ -346,6 +346,22 @@ class _HomeDetailPageState extends State<HomeDetailPage>
           Text('关于这场旅程', style: _DetailTokens.sectionTitle),
           const SizedBox(height: 12),
           ...paragraphs,
+          const SizedBox(height: 8),
+
+          // 图文段落一
+          ..._buildImageBlock(
+            image: 'https://picsum.photos/seed/detail1/1200/640',
+            caption: '老巷口的暖光',
+            text: '午后的阳光从梧桐叶的缝隙里漏下来，在老巷的青石板上碎成一地光斑。巷口的糖水铺子支起招牌，锅里的热气慢悠悠地升腾，把整个街角都熏得温柔。',
+          ),
+          const SizedBox(height: 8),
+
+          // 图文段落二
+          ..._buildImageBlock(
+            image: 'https://picsum.photos/seed/detail2/1200/640',
+            caption: '屋顶花园',
+            text: '沿着狭窄的楼梯往上，一扇不起眼的铁门后面，竟藏着一整片屋顶花园。番茄、薄荷与月季挤在旧木箱里，城市的喧嚣在这里被推得很远很远。',
+          ),
           const SizedBox(height: 24),
           quote,
           const SizedBox(height: 8),
@@ -410,6 +426,36 @@ class _HomeDetailPageState extends State<HomeDetailPage>
         Text(t, style: _DetailTokens.paragraph),
         const SizedBox(height: 12),
       ],
+    ];
+  }
+
+  /// 图文段落：圆角图片 + 图注 + 说明文字
+  List<Widget> _buildImageBlock({
+    required String image,
+    required String caption,
+    required String text,
+  }) {
+    return [
+      ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: NetworkImageWidget(
+          src: image,
+          width: double.infinity,
+          height: 190,
+          fit: BoxFit.cover,
+          cacheWidth: (MediaQuery.of(context).size.width * 3).round(),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        caption,
+        style: _DetailTokens.metaLabel.copyWith(
+          fontSize: 12,
+          letterSpacing: 0.4,
+        ),
+      ),
+      const SizedBox(height: 10),
+      Text(text, style: _DetailTokens.paragraph),
     ];
   }
 
