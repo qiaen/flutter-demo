@@ -22,20 +22,34 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16),
               child: Image.asset(
                 'assets/images/cfl_logo_b.png',
-                height: 20,
+                height: 22,
                 fit: BoxFit.contain,
               ),
             ),
-            trailing: CupertinoButton(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              onPressed: () => debugPrint("搜索"),
-              child: const Icon(
-                CupertinoIcons.search,
-                color: CupertinoColors.white,
+            // 需求1 使用 calendar_logo.png 作为背景，叠加文字「21」(加粗、咖啡色)
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/calendar_logo.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: const Text(
+                  '21',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF6F4E37), // 咖啡色
+                  ),
+                ),
               ),
             ),
           ),
-          // 需求1 页面使用背景图bg.png
           Expanded(
             child: Container(
               width: double.infinity,
@@ -50,7 +64,10 @@ class HomePage extends StatelessWidget {
                 top: false,
                 bottom: false,
                 child: ListView(
-                  padding: const EdgeInsets.only(bottom: 20),
+                  // 底部预留 tab 栏高度 + 安全区，避免内容被遮挡
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).padding.bottom,
+                  ),
                   children: const [
                     // 1. Banner 图
                     HomeBanner(),

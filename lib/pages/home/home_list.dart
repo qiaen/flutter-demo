@@ -50,30 +50,27 @@ class HomeList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
           child: Text(
             '为你推荐',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(), // 控制是局部上下滚动还是整个页面滚动
-          itemCount: _items.length,
-          separatorBuilder: (_, _) => const Padding(
-            padding: EdgeInsets.only(left: 90),
-            child: SizedBox(
-              height: 1,
-              child: DecoratedBox(
-                decoration: BoxDecoration(color: CupertinoColors.systemGrey5),
+        // 直接用 Column 展开列表，避免嵌套 ListView(shrinkWrap) 在真机上的
+        // 异常高度测量导致与标题间距过大（Web 与手机表现不一致）
+        for (int i = 0; i < _items.length; i++) ...[
+          _KeepAliveListItem(item: _items[i], builder: buildListItem),
+          if (i != _items.length - 1)
+            const Padding(
+              padding: EdgeInsets.only(left: 90),
+              child: SizedBox(
+                height: 1,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: CupertinoColors.systemGrey5),
+                ),
               ),
             ),
-          ),
-          itemBuilder: (context, index) {
-            final item = _items[index];
-            return _KeepAliveListItem(item: item, builder: buildListItem);
-          },
-        ),
+        ],
       ],
     );
   }
