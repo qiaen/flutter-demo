@@ -511,21 +511,123 @@ class _HomeDetailPageState extends State<HomeDetailPage>
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemBackground,
-      child: Stack(
-        children: [
-          // 内容滚动层
-          Positioned.fill(
-            child: CustomScrollView(
-              controller: _scrollController,
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(child: _buildHeader()),
-                SliverToBoxAdapter(child: _buildBody()),
+      child: SafeArea(
+        top: false,
+        child: Stack(
+          children: [
+            // 内容 + 固定底部操作栏
+            Column(
+              children: [
+                Expanded(
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      SliverToBoxAdapter(child: _buildHeader()),
+                      SliverToBoxAdapter(child: _buildBody()),
+                    ],
+                  ),
+                ),
+                _buildBottomBar(),
               ],
             ),
+            // 悬浮导航
+            _buildFloatingNavBar(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // 底部固定操作栏
+  // ============================================================
+  Widget _buildBottomBar() {
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    return Container(
+      padding: EdgeInsets.only(
+        left: _DetailTokens.horizontalPadding,
+        right: _DetailTokens.horizontalPadding,
+        top: 10,
+        bottom: bottomInset + 10,
+      ),
+      decoration: BoxDecoration(
+        color: CupertinoColors.systemBackground,
+        border: Border(
+          top: BorderSide(color: CupertinoColors.systemGrey5, width: 0.5),
+        ),
+      ),
+      child: Row(
+        children: [
+          _BottomAction(
+            icon: CupertinoIcons.heart,
+            label: '点赞',
+            color: CupertinoColors.systemRed,
+            onTap: () {},
           ),
-          // 悬浮导航
-          _buildFloatingNavBar(),
+          const SizedBox(width: 8),
+          _BottomAction(
+            icon: CupertinoIcons.chat_bubble,
+            label: '评论',
+            color: CupertinoColors.activeBlue,
+            onTap: () {},
+          ),
+          const SizedBox(width: 8),
+          _BottomAction(
+            icon: CupertinoIcons.share,
+            label: '分享',
+            color: CupertinoColors.activeGreen,
+            onTap: () {},
+          ),
+          const Spacer(),
+          CupertinoButton.filled(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            minimumSize: Size.zero,
+            onPressed: () => Navigator.of(context).maybePop(),
+            child: const Text(
+              '返回',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 底部操作按钮：图标 + 文字（纵向排布）
+class _BottomAction extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _BottomAction({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoButton(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      minimumSize: Size.zero,
+      onPressed: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 20, color: color),
+          const SizedBox(height: 3),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: CupertinoColors.systemGrey,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
