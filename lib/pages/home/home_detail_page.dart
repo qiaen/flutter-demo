@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'dart:math' as math;
 import '../../widgets/network_image_widget.dart';
 
 /// 详情页常量与文本样式集中管理
