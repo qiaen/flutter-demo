@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:myflutter1/pages/mine/message_notify.dart';
 import '../../widgets/network_image_widget.dart';
 import 'user_detail_page.dart';
+// import 'package:smooth_sheets/smooth_sheets.dart';
 
 class MinePage extends StatelessWidget {
   const MinePage({super.key});
@@ -18,9 +19,45 @@ class MinePage extends StatelessWidget {
             Center(
               child: GestureDetector(
                 onTap: () {
-                  showCupertinoModalPopup<void>(
-                    context: context,
-                    builder: (_) => const UserDetailPage(),
+                  // 方式1 加rootNavigator true，会带着appbar从底部弹出，不加会页面向上，导航从右边滑出来
+                  // Navigator.of(context, rootNavigator: true).push(
+                  //   CupertinoModalSheetRoute(
+                  //     builder: (context) => const UserDetailPage(),
+                  //   ),
+                  // );
+
+                  // 方式2 带着导航从底部弹出，和上面rootNavigator true几乎一样
+                  // showAdaptiveModalSheet(
+                  //   context: context,
+                  //   builder: (context) => const UserDetailPage(),
+                  // );
+
+                  // 方式3，这是Cupertino自带的，和苹果，老版sheet几乎一样，貌似不支持控制上页不缩放
+                  // showCupertinoSheet(
+                  //   context: context,
+                  //   showDragHandle: true,
+                  //   scrollableBuilder:
+                  //       (BuildContext context, ScrollController controller) {
+                  //         Widget widgetBuilder(BuildContext context) =>
+                  //             const UserDetailPage();
+                  //         return widgetBuilder(context);
+                  //       },
+                  // );
+
+                  // showCupertinoModalPopup<void>(
+                  //   context: context,
+                  //   builder: (_) => const UserDetailPage(),
+                  // );
+                  // 苹果样式的缩放形式压入导航页面
+                  Navigator.of(context, rootNavigator: true).push(
+                    CupertinoSheetRoute(
+                      scrollableBuilder:
+                          (BuildContext context, ScrollController controller) {
+                            Widget widgetBuilder(BuildContext _) =>
+                                UserDetailPage();
+                            return widgetBuilder(context);
+                          },
+                    ),
                   );
                 },
                 child: const Column(

@@ -9,29 +9,6 @@ class UserDetailPage extends StatefulWidget {
 }
 
 class _UserDetailPageState extends State<UserDetailPage> {
-  final DraggableScrollableController _sheetController =
-      DraggableScrollableController();
-
-  @override
-  void initState() {
-    super.initState();
-    _sheetController.addListener(_onSizeChanged);
-  }
-
-  void _onSizeChanged() {
-    if (_sheetController.size == 0) {
-      Navigator.of(context).pop();
-    }
-  }
-
-  @override
-  void dispose() {
-    _sheetController
-      ..removeListener(_onSizeChanged)
-      ..dispose();
-    super.dispose();
-  }
-
   static const List<Map<String, dynamic>> _detailSections = [
     {
       'title': '个人简介',
@@ -87,167 +64,90 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final topPadding = MediaQuery.of(context).padding.top;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
-    // 1. 获取屏幕总高度
-    final screenHeight = MediaQuery.of(context).size.height;
 
-    // 2. 获取顶部安全区高度（即状态栏高度，通常在 44dp ~ 59dp 之间）
-    final statusBarHeight = MediaQuery.of(context).padding.top;
-
-    // 3. iOS 标准导航栏高度固定为 44dp
-    // const navigationBarHeight = 44.0;
-
-    // 4. 计算非滚动区域（状态栏 + 导航栏）占全屏的比例，这里改了，
-    // statusBarHeight不再+navigationBarHeight高度了
-    final topBarRatio = (statusBarHeight) / screenHeight;
-
-    // 5. 最终完美贴合的初始高度比例：1.0 减去顶栏比例
-    final perfectInitialSize = 1.0 - topBarRatio;
-
-    debugPrint('========== UserDetailPage 高度调试 ==========');
-    debugPrint('screenHeight:        $screenHeight');
-    debugPrint('statusBarHeight:     $statusBarHeight');
-    // debugPrint('navigationBarHeight: $navigationBarHeight');
-    debugPrint('topBarRatio:         $topBarRatio');
-    debugPrint('perfectInitialSize:  $perfectInitialSize');
-    debugPrint('父容器可用高度:       ${screenHeight - statusBarHeight}');
-    debugPrint(
-      'sheet实际像素高度:    ${(screenHeight - statusBarHeight) * perfectInitialSize}',
-    );
-    // debugPrint('期望像素高度:         ${screenHeight - statusBarHeight - navigationBarHeight}');
-    debugPrint('==============================================');
-
-    return Padding(
-      padding: EdgeInsets.only(top: topPadding),
-      child: DraggableScrollableSheet(
-        controller: _sheetController,
-        initialChildSize: perfectInitialSize,
-        minChildSize: 0.0,
-        maxChildSize: perfectInitialSize,
-        expand: false,
-        snap: true, // 1. 开启“吸附/回弹”功能
-        snapSizes: [0.0, perfectInitialSize], // 2. 定义吸附锚点（必须包含 min 和 max 的值）
-        builder: (ctx, scrollController) {
-          return Container(
-            decoration: const BoxDecoration(
-              color: CupertinoColors.systemBackground,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-            ),
-            child: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    top: 8,
-                    bottom: 8,
-                  ),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      '用户详情',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+    return CupertinoPageScaffold(
+      navigationBar: const CupertinoNavigationBar(middle: Text('用户详情')),
+      child: SafeArea(
+        bottom: false,
+        child: ListView(
+          padding: EdgeInsets.only(bottom: 20 + bottomPadding),
+          children: [
+            // 顶部用户信息卡片
+            Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: CupertinoColors.systemBackground,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: CupertinoColors.systemGrey5),
+              ),
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: NetworkImageWidget(
+                      src: 'https://picsum.photos/seed/avatar/200/200',
+                      width: 64,
+                      height: 64,
+                      fit: BoxFit.cover,
+                      errorIcon: CupertinoIcons.person_fill,
+                      errorIconColor: CupertinoColors.systemGrey2,
+                      errorIconSize: 36,
                     ),
                   ),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  height: 1,
-                  color: CupertinoColors.systemGrey5,
-                ),
-                Expanded(
-                  child: ListView(
-                    controller: scrollController,
-                    padding: EdgeInsets.only(bottom: 20 + bottomPadding),
-                    children: [
-                      // 顶部用户信息卡片
-                      Container(
-                        margin: const EdgeInsets.all(16),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.systemBackground,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: CupertinoColors.systemGrey5,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '用户名',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        child: Row(
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Flutter 爱好者 · 上海',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: CupertinoColors.systemGrey,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
                           children: [
-                            ClipOval(
-                              child: NetworkImageWidget(
-                                src:
-                                    'https://picsum.photos/seed/avatar/200/200',
-                                width: 64,
-                                height: 64,
-                                fit: BoxFit.cover,
-                                errorIcon: CupertinoIcons.person_fill,
-                                errorIconColor: CupertinoColors.systemGrey2,
-                                errorIconSize: 36,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    '用户名',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  const Text(
-                                    'Flutter 爱好者 · 上海',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: CupertinoColors.systemGrey,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      _buildMiniStat('128', '关注'),
-                                      const SizedBox(width: 20),
-                                      _buildMiniStat('36', '粉丝'),
-                                      const SizedBox(width: 20),
-                                      _buildMiniStat('52', '收藏'),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+                            _buildMiniStat('128', '关注'),
+                            const SizedBox(width: 20),
+                            _buildMiniStat('36', '粉丝'),
+                            const SizedBox(width: 20),
+                            _buildMiniStat('52', '收藏'),
                           ],
                         ),
-                      ),
-
-                      // 详情段落
-                      ..._detailSections.map((section) {
-                        if (section.containsKey('tags')) {
-                          return _buildTagsSection(
-                            section['title'] as String,
-                            section['tags'] as List<String>,
-                          );
-                        }
-                        return _buildTextSection(
-                          section['title'] as String,
-                          section['body'] as String,
-                        );
-                      }),
-
-                      const SizedBox(height: 20),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          );
-        },
+
+            // 详情段落
+            ..._detailSections.map((section) {
+              if (section.containsKey('tags')) {
+                return _buildTagsSection(
+                  section['title'] as String,
+                  section['tags'] as List<String>,
+                );
+              }
+              return _buildTextSection(
+                section['title'] as String,
+                section['body'] as String,
+              );
+            }),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
