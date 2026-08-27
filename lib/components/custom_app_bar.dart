@@ -20,6 +20,9 @@ class CustomAppBar extends StatelessWidget {
   /// 未传入 [leading] 时，是否显示默认返回按钮
   final bool showBack;
 
+  /// 是否显示背景图（默认 true）。在页面统一铺背景时设为 false，避免重复绘制。
+  final bool showBackground;
+
   const CustomAppBar({
     super.key,
     required this.title,
@@ -27,6 +30,7 @@ class CustomAppBar extends StatelessWidget {
     this.leading,
     this.trailing,
     this.showBack = true,
+    this.showBackground = true,
   });
 
   /// 默认返回按钮（点击直接 pop，无需外部传回调）
@@ -44,18 +48,20 @@ class CustomAppBar extends StatelessWidget {
     return Container(
       width: double.infinity,
       // 背景图铺满整个导航栏区域（含状态栏）
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(
-            // 知识点：Text(MediaQuery.of(context).platformBrightness.toString()) 这个是查询平台的，不是自己定义的
-            CupertinoTheme.of(context).brightness == Brightness.dark
-                ? 'assets/images/bg_black.jpg'
-                : 'assets/images/bg.jpg',
-          ),
-          fit: BoxFit.cover,
-          alignment: Alignment.topCenter,
-        ),
-      ),
+      decoration: showBackground
+          ? BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                  // 知识点：Text(MediaQuery.of(context).platformBrightness.toString()) 这个是查询平台的，不是自己定义的
+                  CupertinoTheme.of(context).brightness == Brightness.dark
+                      ? 'assets/images/bg_black.jpg'
+                      : 'assets/images/bg.jpg',
+                ),
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+              ),
+            )
+          : null,
       padding: EdgeInsets.only(top: safeTop),
       child: SizedBox(
         height: height,
