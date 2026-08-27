@@ -78,9 +78,11 @@ class _UserDetailPageState extends State<UserDetailPage> {
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: CupertinoColors.systemBackground,
+                color: CupertinoColors.systemBackground.resolveFrom(context),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: CupertinoColors.systemGrey5),
+                border: Border.all(
+                  color: CupertinoColors.systemGrey5.resolveFrom(context),
+                ),
               ),
               child: Row(
                 children: [
@@ -138,11 +140,13 @@ class _UserDetailPageState extends State<UserDetailPage> {
                 return _buildTagsSection(
                   section['title'] as String,
                   section['tags'] as List<String>,
+                  context: context,
                 );
               }
               return _buildTextSection(
                 section['title'] as String,
                 section['body'] as String,
+                context: context,
               );
             }),
             const SizedBox(height: 20),
@@ -152,14 +156,20 @@ class _UserDetailPageState extends State<UserDetailPage> {
     );
   }
 
-  Widget _buildTextSection(String title, String body) {
+  Widget _buildTextSection(
+    String title,
+    String body, {
+    required BuildContext context,
+  }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: CupertinoColors.systemBackground,
+        color: CupertinoColors.systemBackground.resolveFrom(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: CupertinoColors.systemGrey5),
+        border: Border.all(
+          color: CupertinoColors.systemGrey5.resolveFrom(context),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,10 +181,11 @@ class _UserDetailPageState extends State<UserDetailPage> {
           const SizedBox(height: 10),
           Text(
             body,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               height: 1.7,
-              color: CupertinoColors.darkBackgroundGray,
+              // 知识点：如果TextStyle用了const，这里就不能变色，会报错
+              color: CupertinoColors.systemGrey.resolveFrom(context),
             ),
           ),
         ],
@@ -182,14 +193,20 @@ class _UserDetailPageState extends State<UserDetailPage> {
     );
   }
 
-  Widget _buildTagsSection(String title, List<String> tags) {
+  Widget _buildTagsSection(
+    String title,
+    List<String> tags, {
+    required BuildContext context,
+  }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: CupertinoColors.systemBackground,
+        color: CupertinoColors.systemBackground.resolveFrom(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: CupertinoColors.systemGrey5),
+        border: Border.all(
+          color: CupertinoColors.systemGrey5.resolveFrom(context),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

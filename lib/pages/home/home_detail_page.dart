@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import '../../widgets/network_image_widget.dart';
+import 'dart:math' as math;
 
 /// 详情页常量与文本样式集中管理
 class _DetailTokens {
@@ -897,14 +898,13 @@ class _HomeDetailPageState extends State<HomeDetailPage>
   // 底部固定操作栏
   // ============================================================
   Widget _buildBottomBar() {
-    var bottomInset = MediaQuery.of(context).padding.bottom;
-    bottomInset = bottomInset == 0.0 ? 10 : bottomInset;
+    final bottomInset = MediaQuery.of(context).padding.bottom > 0 ? 0.0 : 10.0;
     return Container(
       padding: EdgeInsets.only(
         left: _DetailTokens.horizontalPadding,
         right: _DetailTokens.horizontalPadding,
         top: 10,
-        // bottom: bottomInset,
+        bottom: bottomInset,
       ),
       decoration: BoxDecoration(
         color: CupertinoColors.systemBackground,

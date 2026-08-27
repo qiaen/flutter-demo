@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:myflutter1/pages/mine/message_notify.dart';
 import '../../widgets/network_image_widget.dart';
+import 'settings_page.dart';
 import 'user_detail_page.dart';
 // import 'package:smooth_sheets/smooth_sheets.dart';
 
@@ -103,6 +104,7 @@ class MinePage extends StatelessWidget {
             const SizedBox(height: 8),
             // 菜单列表
             _buildSection(
+              context: context,
               children: [
                 _buildMenuRow(context, CupertinoIcons.person_2_fill, '个人信息'),
                 _buildMenuRow(context, CupertinoIcons.settings_solid, '设置'),
@@ -111,6 +113,7 @@ class MinePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildSection(
+              context: context,
               children: [
                 _buildMenuRow(context, CupertinoIcons.heart_solid, '我的收藏'),
                 _buildMenuRow(context, CupertinoIcons.clock_solid, '浏览历史'),
@@ -119,6 +122,7 @@ class MinePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildSection(
+              context: context,
               children: [_buildMenuRow(context, CupertinoIcons.info, '关于我们')],
             ),
             const SizedBox(height: 30),
@@ -128,13 +132,18 @@ class MinePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSection({required List<Widget> children}) {
+  Widget _buildSection({
+    required List<Widget> children,
+    required BuildContext context,
+  }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: CupertinoColors.systemBackground,
+        color: CupertinoColors.systemBackground.resolveFrom(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: CupertinoColors.systemGrey5),
+        border: Border.all(
+          color: CupertinoColors.systemGrey5.resolveFrom(context),
+        ),
       ),
       child: Column(children: children),
     );
@@ -144,7 +153,12 @@ class MinePage extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        if (title == "消息通知") {
+        if (title == "设置") {
+          Navigator.of(
+            context,
+            rootNavigator: true, // 去掉的话，二级页面会带底部 tab
+          ).push(CupertinoPageRoute(builder: (_) => const SettingsPage()));
+        } else if (title == "消息通知") {
           Navigator.of(
             context,
             rootNavigator: true, //  知识点1 去掉的话，二级页面会有底部tab

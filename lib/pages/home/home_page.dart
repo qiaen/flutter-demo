@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
     return CupertinoPageScaffold(
       child: Column(
         children: [
-          // 自定义导航栏：bg_navbar.png 背景，常驻显示（不依赖滚动）
+          // bg.png 背景，常驻显示（不依赖滚动）
           // 左侧不传 → 默认显示返回按钮（点击自动 pop）
           // 右侧插槽传入搜索按钮，点击事件在 Widget 内部自定义
           CustomAppBar(
@@ -26,12 +26,12 @@ class HomePage extends StatelessWidget {
                 fit: BoxFit.contain,
               ),
             ),
-            // 需求1 使用 calendar_logo.png 作为背景，叠加文字「21」(加粗、咖啡色)
+            // 打卡日历图片
             trailing: Padding(
               padding: const EdgeInsets.only(right: 16),
               child: Container(
-                width: 34,
-                height: 34,
+                width: 40,
+                height: 40,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/images/calendar_logo.png'),
@@ -54,10 +54,15 @@ class HomePage extends StatelessWidget {
             child: Container(
               width: double.infinity,
               height: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/bg.png'),
+                  image: AssetImage(
+                    CupertinoTheme.of(context).brightness == Brightness.dark
+                        ? 'assets/images/bg_black.jpg'
+                        : 'assets/images/bg.jpg',
+                  ),
                   fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
                 ),
               ),
               child: SafeArea(
@@ -67,6 +72,7 @@ class HomePage extends StatelessWidget {
                   // 底部预留 tab 栏高度 + 安全区，避免内容被遮挡
                   padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).padding.bottom,
+                    top: 16,
                   ),
                   children: const [
                     // 1. Banner 图

@@ -3,8 +3,15 @@ import 'pages/home/home_page.dart';
 import 'pages/events/events_page.dart';
 import 'pages/materials/materials_page.dart';
 import 'pages/mine/mine_page.dart';
+import 'package:flutter/services.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // 🔒 只允许竖屏，禁止横屏
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp, // 仅手机竖直向上
+  ]);
+
   runApp(const MyApp());
 }
 
@@ -17,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: CupertinoThemeData(
-        brightness: Brightness.light, // 控制项目暗黑模式 / 日间模式
+        brightness: Brightness.dark, // 控制项目暗黑模式 / 日间模式 / 不写就是跟随系统
         primaryColor: CupertinoColors.activeBlue, // 全局活跃主色调（影响图标和文字）
       ),
       home: MainTabPage(),

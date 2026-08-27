@@ -6,9 +6,7 @@ class MaterialsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Materials'),
-      ),
+      navigationBar: const CupertinoNavigationBar(middle: Text('Materials')),
       child: SafeArea(
         child: GridView.count(
           crossAxisCount: 2,
@@ -76,9 +74,11 @@ class _MaterialCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: CupertinoColors.systemBackground,
+        color: CupertinoColors.systemBackground.resolveFrom(context),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: CupertinoColors.systemGrey5),
+        border: Border.all(
+          color: CupertinoColors.systemGrey5.resolveFrom(context),
+        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -95,18 +95,12 @@ class _MaterialCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
           Text(
             count,
-            style: TextStyle(
-              fontSize: 12,
-              color: CupertinoColors.systemGrey,
-            ),
+            style: TextStyle(fontSize: 12, color: CupertinoColors.systemGrey),
           ),
         ],
       ),

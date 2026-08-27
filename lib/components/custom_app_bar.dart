@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-/// 自定义导航栏：使用 bg_navbar.png 作为背景，常驻显示（不依赖滚动）
+/// 自定义导航栏：使用 bg.png 作为背景，常驻显示（不依赖滚动）
 ///
 /// 参数说明：
 /// - [title] 必填标题
@@ -44,10 +44,16 @@ class CustomAppBar extends StatelessWidget {
     return Container(
       width: double.infinity,
       // 背景图铺满整个导航栏区域（含状态栏）
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/bg_navbar.png'),
+          image: AssetImage(
+            // 知识点：Text(MediaQuery.of(context).platformBrightness.toString()) 这个是查询平台的，不是自己定义的
+            CupertinoTheme.of(context).brightness == Brightness.dark
+                ? 'assets/images/bg_black.jpg'
+                : 'assets/images/bg.jpg',
+          ),
           fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
         ),
       ),
       padding: EdgeInsets.only(top: safeTop),
@@ -55,6 +61,7 @@ class CustomAppBar extends StatelessWidget {
         height: height,
         child: Row(
           children: [
+            // Text(CupertinoTheme.of(context).brightness.toString()),
             // 左侧：插槽优先，否则按 showBack 显示默认返回
             leading ??
                 (showBack ? _defaultBack(context) : const SizedBox.shrink()),

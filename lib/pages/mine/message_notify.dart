@@ -134,9 +134,13 @@ class _MessageNotifyState extends State<MessageNotify> {
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: CupertinoColors.systemBackground,
+                    color: CupertinoColors.systemBackground.resolveFrom(
+                      context,
+                    ),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: CupertinoColors.systemGrey5),
+                    border: Border.all(
+                      color: CupertinoColors.systemGrey5.resolveFrom(context),
+                    ),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
@@ -152,13 +156,19 @@ class _MessageNotifyState extends State<MessageNotify> {
                           _enableNotification = val;
                         });
                       }),
-                      Container(height: 1, color: CupertinoColors.systemGrey5),
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.systemGrey5.resolveFrom(context),
+                      ),
                       _buildSwitchRow("离线推送消息", _enablePush, (val) {
                         setState(() {
                           _enablePush = val;
                         });
                       }),
-                      Container(height: 1, color: CupertinoColors.systemGrey5),
+                      Container(
+                        height: 1,
+                        color: CupertinoColors.systemGrey5.resolveFrom(context),
+                      ),
                       _buildSwitchRow("通知提示音", _enableSound, (val) {
                         setState(() {
                           _enableSound = val;

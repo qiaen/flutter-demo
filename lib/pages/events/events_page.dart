@@ -37,9 +37,7 @@ class EventsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Events'),
-      ),
+      navigationBar: const CupertinoNavigationBar(middle: Text('Events')),
       child: SafeArea(
         child: ListView.builder(
           padding: const EdgeInsets.all(16),
@@ -50,9 +48,11 @@ class EventsPage extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: CupertinoColors.systemBackground,
+                color: CupertinoColors.systemBackground.resolveFrom(context),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: CupertinoColors.systemGrey5),
+                border: Border.all(
+                  color: CupertinoColors.systemGrey5.resolveFrom(context),
+                ),
               ),
               child: Row(
                 children: [
