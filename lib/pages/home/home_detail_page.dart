@@ -1,95 +1,151 @@
 import 'package:flutter/cupertino.dart';
 import '../../widgets/network_image_widget.dart';
-import 'dart:math' as math;
 
 /// 详情页常量与文本样式集中管理
 class _DetailTokens {
-  static const double headerHeight = 320; // 顶部大图区域高度
-  static const double navBarHeight = 44; // 顶部导航条高度
+  // ========== 尺寸常量（编译期const不变） ==========
+  static const double headerHeight = 320;
+  static const double navBarHeight = 44;
   static const double horizontalPadding = 20;
 
-  static const TextStyle heroTitle = TextStyle(
+  // ========== 字体样式配置（只存大小、字重、行高，不写color） ==========
+  static const _heroTitleCfg = TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.w700,
-    color: CupertinoColors.white,
     letterSpacing: 0.2,
     height: 1.2,
   );
-  static const TextStyle heroSubtitle = TextStyle(
-    fontSize: 15,
-    color: CupertinoColors.white,
-    height: 1.4,
-  );
-  static const TextStyle navTitle = TextStyle(
+  static const _heroSubtitleCfg = TextStyle(fontSize: 15, height: 1.4);
+  static const _navTitleCfg = TextStyle(
     fontSize: 17,
     fontWeight: FontWeight.w600,
-    color: CupertinoColors.label,
   );
-  static const TextStyle sectionTitle = TextStyle(
+  static const _sectionTitleCfg = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w700,
-    color: CupertinoColors.label,
     letterSpacing: 0.2,
   );
-  static const TextStyle paragraph = TextStyle(
+  static const _paragraphCfg = TextStyle(
     fontSize: 15,
     height: 1.7,
-    color: CupertinoColors.label,
     letterSpacing: 0.2,
   );
-  static const TextStyle metaLabel = TextStyle(
-    fontSize: 12,
-    color: CupertinoColors.systemGrey,
-    letterSpacing: 0.3,
-  );
-  static const TextStyle metaValue = TextStyle(
+  static const _metaLabelCfg = TextStyle(fontSize: 12, letterSpacing: 0.3);
+  static const _metaValueCfg = TextStyle(
     fontSize: 15,
     fontWeight: FontWeight.w600,
-    color: CupertinoColors.label,
   );
-  static const TextStyle quoteText = TextStyle(
+  static const _quoteTextCfg = TextStyle(
     fontSize: 16,
     height: 1.6,
     fontStyle: FontStyle.italic,
-    color: CupertinoColors.label,
   );
-  static const TextStyle tipTitle = TextStyle(
+  static const _tipTitleCfg = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: CupertinoColors.label,
   );
-  static const TextStyle tipDesc = TextStyle(
-    fontSize: 12,
-    height: 1.4,
-    color: CupertinoColors.systemGrey,
-  );
-  static const TextStyle recTitle = TextStyle(
+  static const _tipDescCfg = TextStyle(fontSize: 12, height: 1.4);
+  static const _recTitleCfg = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: CupertinoColors.label,
   );
-  static const TextStyle recDesc = TextStyle(
-    fontSize: 12,
-    color: CupertinoColors.systemGrey,
-  );
-  static const TextStyle commentName = TextStyle(
+  static const _recDescCfg = TextStyle(fontSize: 12);
+  static const _commentNameCfg = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: CupertinoColors.label,
   );
-  static const TextStyle commentTime = TextStyle(
-    fontSize: 12,
-    color: CupertinoColors.systemGrey,
-  );
-  static const TextStyle commentBody = TextStyle(
-    fontSize: 14,
-    height: 1.55,
-    color: CupertinoColors.label,
-  );
-  static const TextStyle commentAction = TextStyle(
-    fontSize: 11,
-    color: CupertinoColors.systemGrey,
-  );
+  static const _commentTimeCfg = TextStyle(fontSize: 12);
+  static const _commentBodyCfg = TextStyle(fontSize: 14, height: 1.55);
+  static const _commentActionCfg = TextStyle(fontSize: 11);
+
+  // ========== 对外暴露方法，传入context，返回完整动态TextStyle ==========
+  static TextStyle heroTitle(BuildContext ctx) {
+    return _heroTitleCfg.copyWith(
+      color: CupertinoColors.white, // 头部大图上面文字，永远白色，不受暗黑影响
+    );
+  }
+
+  static TextStyle heroSubtitle(BuildContext ctx) {
+    return _heroSubtitleCfg.copyWith(color: CupertinoColors.white);
+  }
+
+  static TextStyle navTitle(BuildContext ctx) {
+    return _navTitleCfg.copyWith(color: CupertinoColors.label.resolveFrom(ctx));
+  }
+
+  static TextStyle sectionTitle(BuildContext ctx) {
+    return _sectionTitleCfg.copyWith(
+      color: CupertinoColors.label.resolveFrom(ctx),
+    );
+  }
+
+  static TextStyle paragraph(BuildContext ctx) {
+    return _paragraphCfg.copyWith(
+      color: CupertinoColors.label.resolveFrom(ctx),
+    );
+  }
+
+  static TextStyle metaLabel(BuildContext ctx) {
+    return _metaLabelCfg.copyWith(
+      color: CupertinoColors.systemGrey.resolveFrom(ctx),
+    );
+  }
+
+  static TextStyle metaValue(BuildContext ctx) {
+    return _metaValueCfg.copyWith(
+      color: CupertinoColors.label.resolveFrom(ctx),
+    );
+  }
+
+  static TextStyle quoteText(BuildContext ctx) {
+    return _quoteTextCfg.copyWith(
+      color: CupertinoColors.label.resolveFrom(ctx),
+    );
+  }
+
+  static TextStyle tipTitle(BuildContext ctx) {
+    return _tipTitleCfg.copyWith(color: CupertinoColors.label.resolveFrom(ctx));
+  }
+
+  static TextStyle tipDesc(BuildContext ctx) {
+    return _tipDescCfg.copyWith(
+      color: CupertinoColors.systemGrey.resolveFrom(ctx),
+    );
+  }
+
+  static TextStyle recTitle(BuildContext ctx) {
+    return _recTitleCfg.copyWith(color: CupertinoColors.label.resolveFrom(ctx));
+  }
+
+  static TextStyle recDesc(BuildContext ctx) {
+    return _recDescCfg.copyWith(
+      color: CupertinoColors.systemGrey.resolveFrom(ctx),
+    );
+  }
+
+  static TextStyle commentName(BuildContext ctx) {
+    return _commentNameCfg.copyWith(
+      color: CupertinoColors.label.resolveFrom(ctx),
+    );
+  }
+
+  static TextStyle commentTime(BuildContext ctx) {
+    return _commentTimeCfg.copyWith(
+      color: CupertinoColors.systemGrey.resolveFrom(ctx),
+    );
+  }
+
+  static TextStyle commentBody(BuildContext ctx) {
+    return _commentBodyCfg.copyWith(
+      color: CupertinoColors.label.resolveFrom(ctx),
+    );
+  }
+
+  static TextStyle commentAction(BuildContext ctx) {
+    return _commentActionCfg.copyWith(
+      color: CupertinoColors.systemGrey.resolveFrom(ctx),
+    );
+  }
 }
 
 /// 详情页接收的数据
@@ -255,7 +311,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                   ),
                   child: Text(
                     '发现 · 城市秘境',
-                    style: _DetailTokens.heroSubtitle.copyWith(
+                    style: _DetailTokens.heroSubtitle(context).copyWith(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.6,
@@ -263,10 +319,13 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(_item.title, style: _DetailTokens.heroTitle),
+                Text(_item.title, style: _DetailTokens.heroTitle(context)),
                 if (_item.subtitle.isNotEmpty) ...[
                   const SizedBox(height: 6),
-                  Text(_item.subtitle, style: _DetailTokens.heroSubtitle),
+                  Text(
+                    _item.subtitle,
+                    style: _DetailTokens.heroSubtitle(context),
+                  ),
                 ],
               ],
             ),
@@ -279,14 +338,18 @@ class _HomeDetailPageState extends State<HomeDetailPage>
   // ============================================================
   // 顶部悬浮导航（透明 → 滚动后渐变白色）
   // ============================================================
-  Widget _buildFloatingNavBar() {
+  Widget _buildFloatingNavBar(BuildContext context) {
     final safeTop = MediaQuery.of(context).padding.top;
     // 图标颜色：滚动过半切换为深色，保证在白色背景上可读
     final iconColor = Color.lerp(
-      CupertinoColors.white,
-      CupertinoColors.label,
+      CupertinoDynamicColor.withBrightness(
+        color: CupertinoColors.white,
+        darkColor: CupertinoColors.systemGrey6,
+      ).resolveFrom(context),
+      CupertinoColors.label.resolveFrom(context),
       _scrollProgress,
     )!;
+
     // 标题透明度：滚动后渐显
     final titleOpacity = _scrollProgress;
 
@@ -298,14 +361,14 @@ class _HomeDetailPageState extends State<HomeDetailPage>
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
         decoration: BoxDecoration(
-          color: CupertinoColors.systemBackground.withValues(
-            alpha: _scrollProgress,
-          ),
+          color: CupertinoColors.systemBackground
+              .resolveFrom(context)
+              .withValues(alpha: _scrollProgress),
           border: Border(
             bottom: BorderSide(
-              color: CupertinoColors.systemGrey5.withValues(
-                alpha: _scrollProgress * 0.6,
-              ),
+              color: CupertinoColors.systemGrey5
+                  .resolveFrom(context)
+                  .withValues(alpha: _scrollProgress * 0.6),
               width: 0.5,
             ),
           ),
@@ -326,7 +389,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                     opacity: titleOpacity,
                     child: Text(
                       _item.title,
-                      style: _DetailTokens.navTitle,
+                      style: _DetailTokens.navTitle(context),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -364,7 +427,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
     final quote = _buildQuote();
 
     return Container(
-      color: CupertinoColors.systemBackground,
+      color: CupertinoColors.systemBackground.resolveFrom(context),
       padding: const EdgeInsets.symmetric(
         // horizontal: _DetailTokens.horizontalPadding,
       ).copyWith(top: 22, bottom: 32),
@@ -379,7 +442,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 描述
-                Text(_item.desc, style: _DetailTokens.paragraph),
+                Text(_item.desc, style: _DetailTokens.paragraph(context)),
                 const SizedBox(height: 20),
 
                 // 元信息（标签）
@@ -387,7 +450,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                 const SizedBox(height: 24),
 
                 // 标题
-                Text('关于这场旅程', style: _DetailTokens.sectionTitle),
+                Text('关于这场旅程', style: _DetailTokens.sectionTitle(context)),
                 const SizedBox(height: 12),
                 ...paragraphs,
                 const SizedBox(height: 8),
@@ -472,10 +535,10 @@ class _HomeDetailPageState extends State<HomeDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('实用贴士', style: _DetailTokens.sectionTitle),
+            Text('实用贴士', style: _DetailTokens.sectionTitle(context)),
             Icon(
               CupertinoIcons.sparkles,
               size: 18,
@@ -488,7 +551,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: CupertinoColors.systemGrey6,
+              color: CupertinoColors.systemGrey6.resolveFrom(context),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -508,9 +571,9 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(tip.title, style: _DetailTokens.tipTitle),
+                      Text(tip.title, style: _DetailTokens.tipTitle(context)),
                       const SizedBox(height: 4),
-                      Text(tip.desc, style: _DetailTokens.tipDesc),
+                      Text(tip.desc, style: _DetailTokens.tipDesc(context)),
                     ],
                   ),
                 ),
@@ -557,7 +620,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
           padding: const EdgeInsetsGeometry.symmetric(
             horizontal: _DetailTokens.horizontalPadding,
           ),
-          child: const Text('相关推介', style: _DetailTokens.sectionTitle),
+          child: Text('相关推介', style: _DetailTokens.sectionTitle(context)),
         ),
 
         const SizedBox(height: 14),
@@ -582,7 +645,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                 child: Container(
                   width: 150,
                   decoration: BoxDecoration(
-                    color: CupertinoColors.systemGrey6,
+                    color: CupertinoColors.systemGrey6.resolveFrom(context),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   clipBehavior: Clip.antiAlias,
@@ -604,12 +667,15 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                           children: [
                             Text(
                               rec.title,
-                              style: _DetailTokens.recTitle,
+                              style: _DetailTokens.recTitle(context),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 2),
-                            Text(rec.desc, style: _DetailTokens.recDesc),
+                            Text(
+                              rec.desc,
+                              style: _DetailTokens.recDesc(context),
+                            ),
                           ],
                         ),
                       ),
@@ -652,10 +718,10 @@ class _HomeDetailPageState extends State<HomeDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('热门评论', style: _DetailTokens.sectionTitle),
+            Text('热门评论', style: _DetailTokens.sectionTitle(context)),
             Text(
               '查看全部 >',
               style: TextStyle(fontSize: 13, color: CupertinoColors.systemGrey),
@@ -687,13 +753,13 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                   children: [
                     Row(
                       children: [
-                        Text(c.name, style: _DetailTokens.commentName),
+                        Text(c.name, style: _DetailTokens.commentName(context)),
                         const SizedBox(width: 8),
-                        Text(c.time, style: _DetailTokens.commentTime),
+                        Text(c.time, style: _DetailTokens.commentTime(context)),
                       ],
                     ),
                     const SizedBox(height: 5),
-                    Text(c.content, style: _DetailTokens.commentBody),
+                    Text(c.content, style: _DetailTokens.commentBody(context)),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -703,7 +769,10 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                           color: CupertinoColors.systemGrey,
                         ),
                         const SizedBox(width: 3),
-                        Text('${c.likes}', style: _DetailTokens.commentAction),
+                        Text(
+                          '${c.likes}',
+                          style: _DetailTokens.commentAction(context),
+                        ),
                         const SizedBox(width: 16),
                         const Icon(
                           CupertinoIcons.chat_bubble,
@@ -711,7 +780,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
                           color: CupertinoColors.systemGrey,
                         ),
                         const SizedBox(width: 3),
-                        const Text('回复', style: _DetailTokens.commentAction),
+                        Text('回复', style: _DetailTokens.commentAction(context)),
                       ],
                     ),
                   ],
@@ -723,7 +792,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
             Container(
               margin: const EdgeInsets.only(top: 14),
               height: 1,
-              color: CupertinoColors.systemGrey5,
+              color: CupertinoColors.systemGrey5.resolveFrom(context),
             ),
         ],
       ],
@@ -739,7 +808,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
       decoration: BoxDecoration(
-        color: CupertinoColors.systemGrey6,
+        color: CupertinoColors.systemGrey6.resolveFrom(context),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -749,9 +818,9 @@ class _HomeDetailPageState extends State<HomeDetailPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(entries[i].$1, style: _DetailTokens.metaLabel),
+                  Text(entries[i].$1, style: _DetailTokens.metaLabel(context)),
                   const SizedBox(height: 4),
-                  Text(entries[i].$2, style: _DetailTokens.metaValue),
+                  Text(entries[i].$2, style: _DetailTokens.metaValue(context)),
                 ],
               ),
             ),
@@ -778,7 +847,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
     ];
     return [
       for (final t in texts) ...[
-        Text(t, style: _DetailTokens.paragraph),
+        Text(t, style: _DetailTokens.paragraph(context)),
         const SizedBox(height: 12),
       ],
     ];
@@ -804,13 +873,12 @@ class _HomeDetailPageState extends State<HomeDetailPage>
       const SizedBox(height: 8),
       Text(
         caption,
-        style: _DetailTokens.metaLabel.copyWith(
-          fontSize: 12,
-          letterSpacing: 0.4,
-        ),
+        style: _DetailTokens.metaLabel(
+          context,
+        ).copyWith(fontSize: 12, letterSpacing: 0.4),
       ),
       const SizedBox(height: 10),
-      Text(text, style: _DetailTokens.paragraph),
+      Text(text, style: _DetailTokens.paragraph(context)),
     ];
   }
 
@@ -818,13 +886,13 @@ class _HomeDetailPageState extends State<HomeDetailPage>
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
       decoration: BoxDecoration(
-        color: CupertinoColors.systemGrey6,
+        color: CupertinoColors.systemGrey6.resolveFrom(context),
         borderRadius: BorderRadius.circular(10),
         border: Border(left: BorderSide(color: _item.tint, width: 3)),
       ),
       child: Text(
         '“旅行不是为了赶路，而是为了在某个转角，重新认识自己与这座城市的关系。”',
-        style: _DetailTokens.quoteText,
+        style: _DetailTokens.quoteText(context),
       ),
     );
   }
@@ -834,7 +902,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
       padding: const EdgeInsets.only(left: 14),
       child: Text(
         '—— 编辑部',
-        style: _DetailTokens.metaLabel.copyWith(letterSpacing: 0.5),
+        style: _DetailTokens.metaLabel(context).copyWith(letterSpacing: 0.5),
       ),
     );
   }
@@ -843,9 +911,11 @@ class _HomeDetailPageState extends State<HomeDetailPage>
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: CupertinoColors.systemBackground,
+        color: CupertinoColors.systemBackground.resolveFrom(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: CupertinoColors.systemGrey5),
+        border: Border.all(
+          color: CupertinoColors.systemGrey5.resolveFrom(context),
+        ),
       ),
       child: Row(
         children: [
@@ -887,7 +957,7 @@ class _HomeDetailPageState extends State<HomeDetailPage>
               ],
             ),
             // 悬浮导航
-            _buildFloatingNavBar(),
+            _buildFloatingNavBar(context),
           ],
         ),
       ),
@@ -907,9 +977,12 @@ class _HomeDetailPageState extends State<HomeDetailPage>
         bottom: bottomInset,
       ),
       decoration: BoxDecoration(
-        color: CupertinoColors.systemBackground,
+        color: CupertinoColors.systemBackground.resolveFrom(context),
         border: Border(
-          top: BorderSide(color: CupertinoColors.systemGrey5, width: 0.5),
+          top: BorderSide(
+            color: CupertinoColors.systemGrey5.resolveFrom(context),
+            width: 0.5,
+          ),
         ),
       ),
       child: Row(

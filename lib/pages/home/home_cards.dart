@@ -75,7 +75,11 @@ class HomeCards extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
+          color: color.withValues(
+            alpha: CupertinoTheme.of(context).brightness == Brightness.dark
+                ? 0.4
+                : 0.1,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
