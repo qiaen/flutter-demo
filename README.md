@@ -48,6 +48,10 @@ adb -s da0ace9a install build/app/outputs/flutter-apk/app-release.apk
 ## 或者 flutter install --release 安装生产包到手机
 flutter install --release
 
+## 安装性能分析包
+flutter run --profile -d xxx
+## 安装生产环境包
+flutter run --release -d xxx
 ```
 
 ## 常用命令

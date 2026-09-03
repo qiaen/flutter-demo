@@ -7,10 +7,13 @@ class ApiSongs {
   /// [params] 由外部传入，例如：
   ///   {'msg': 'xxx', 'n': '1', 'token': 'xxx'}
   /// 其中 n 为可选，不传或传 null 时不会加入请求参数。
-  static Future<ApiResponse<ResSongs>> getSongs(ReqGetSongs params) async {
-    final res = await Http.get<ResSongs>(
-      '', // "/songs"
-      ResSongs.fromJson,
+  ///
+  ///
+  static Future<ApiResponse<List<ResSong>>> getSongs(ReqGetSongs params) async {
+    // data 是数组：用 getList，fromData 直接传单个元素的解析方法
+    final res = await Http.getList<ResSong>(
+      '',
+      ResSong.fromJson,
       params: params.toQuery(),
     );
     return res;

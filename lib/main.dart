@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: CupertinoThemeData(
-        brightness: Brightness.dark, // 控制项目暗黑模式 / 日间模式 / 不写就是跟随系统
+        // brightness: Brightness.dark, // 控制项目暗黑模式 / 日间模式 / 不写就是跟随系统
         primaryColor: CupertinoColors.activeBlue, // 全局活跃主色调（影响图标和文字）
       ),
       home: MainTabPage(),
